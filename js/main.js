@@ -2,27 +2,6 @@ let bebida;
 let cuantosVasos;
 let tamañoVasos;
 
-alert("Bienvenido a la calculadora de cantidades para Bares.");
-
-bebida = prompt("¿Qué bebida prepará?");
-cuantosVasos = glassQuantity();
-tamañoVasos = glassSize();
-let resultado = `Para preparar ${cuantosVasos} vasos de ${tamañoVasos}ml de ${bebida} necesitaras la siguiente cantidad de botellas: `;
-
-let cantIngredientes = parseInt(prompt("Ingrese la cantidad de ingredientes:"));
-while (isNaN(cantIngredientes) || cantIngredientes < 0) {
-  cantIngredientes = prompt(
-    "Por favor, solo ingrese números enteros mayores a 0."
-  );
-}
-
-for (let i = 1; i <= cantIngredientes; i++) {
-  resultado = `${resultado}\n${prompt(
-    "Nombre del ingrediente:"
-  )}: ${cantBotellas(tamañoVasos)} botella/as.`;
-}
-alert(resultado);
-
 function glassQuantity() {
   cuantosVasos = parseInt(
     prompt("Ingrese la cantidad de vasos que desea preparar.")
@@ -82,3 +61,24 @@ function bottleCapacity() {
   );
   return capacidad;
 }
+
+alert("Bienvenido a la calculadora de cantidades para Bares.");
+
+bebida = prompt("¿Qué bebida prepará?");
+cuantosVasos = glassQuantity();
+tamañoVasos = glassSize();
+let resultado = `Para preparar ${cuantosVasos} vasos de ${tamañoVasos}ml de ${bebida} necesitaras la siguiente cantidad de botellas: `;
+
+let cantIngredientes = parseInt(prompt("Ingrese la cantidad de ingredientes:"));
+while (isNaN(cantIngredientes) || cantIngredientes < 0) {
+  cantIngredientes = prompt(
+    "Por favor, solo ingrese números enteros mayores a 0."
+  );
+}
+
+for (let i = 1; i <= cantIngredientes; i++) {
+  resultado = `${resultado}\n${prompt(
+    "Nombre del ingrediente:"
+  )}: ${cantBotellas(tamañoVasos)} botella/as.`;
+}
+alert(resultado);
