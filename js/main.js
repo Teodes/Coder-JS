@@ -1,12 +1,25 @@
-let bebida;
 let cuantosVasos;
 let tamañoVasos;
+let cocktailList = [];
+
+class cocktail {
+  constructor(nombre, ingredientes, proporcion, unidad) {
+    this.nombre = nombre;
+    this.ingredientes = ingredientes;
+    this.proporcion = proporcion;
+    this.unidad = unidad;
+  }
+}
+
+function addCocktail(nombre, ingredientes, proporcion, unidad) {
+  cocktailList.push(new cocktail(nombre, ingredientes, proporcion, unidad));
+}
 
 function glassQuantity() {
   cuantosVasos = parseInt(
     prompt("Ingrese la cantidad de vasos que desea preparar.")
   );
-  while (isNaN(cuantosVasos) || cuantosVasos < 0) {
+  while (isNaN(cuantosVasos) || cuantosVasos <= 0) {
     cuantosVasos = prompt(
       "Por favor, solo ingrese números enteros mayores a 0."
     );
@@ -35,50 +48,73 @@ function glassSize() {
   }
 }
 
-function cantBotellas(vasoML) {
-  let unitIngredient = prompt("Unidad de medida: \n-OZ\n-ML\n-Porcentaje");
-  let quantityIngredient = parseInt(
-    prompt("¿Cuánta cantidad del ingrediente lleva?")
-  );
+function cantBotellas(bebida, numIngr) {
   let amountPerGlass;
-  if (unitIngredient.toLowerCase() == "oz") {
-    amountPerGlass = quantityIngredient * 30;
-  } else if (unitIngredient.toLowerCase() == "ml") {
-    amountPerGlass = quantityIngredient;
-  } else if (unitIngredient.toLowerCase() == "porcentaje") {
-    amountPerGlass = (vasoML * quantityIngredient) / 100;
-  } else {
-    alert("Los datos ingresados no son correctos, intente de nuevo.");
-    cantBotellas(vasoML);
+  switch (bebida.unidad.toLowerCase()) {
+    case "oz":
+      amountPerGlass = bebida.proporcion[i] * 30;
+      break;
+    case "ml":
+      amountPerGlass = bebida.proporcion[i];
+      break;
+    case "porcentaje":
+      amountPerGlass = (tamañoVasos * bebida.proporcion[numIngr]) / 100;
+      break;
+    default:
+      alert(
+        "Lo sentimos mucho, ha habido un error de nuestra parte, intenta con otra bebida."
+      );
+      break;
   }
-
-  return Math.ceil((amountPerGlass * cuantosVasos) / bottleCapacity());
+  return Math.ceil(
+    (amountPerGlass * cuantosVasos) /
+      bottleCapacity(bebida.ingredientes[numIngr])
+  );
 }
 
-function bottleCapacity() {
+function bottleCapacity(ingr) {
   let capacidad = parseInt(
-    prompt("Ingrese la capacidad de la botella en ml (Solo el número).")
+    prompt(
+      `Ingrese la capacidad de la botella de ${ingr} en ml (Solo el número).`
+    )
   );
   return capacidad;
 }
 
-alert("Bienvenido a la calculadora de cantidades para Bares.");
+function pickDrink() {
+  let msg = prompt(
+    "¿Qué bebida prepará?\n-Destornillador\n-Fernet\n-Campari"
+  ).toLowerCase();
+  for (let i = 0; i < cocktailList.length; i++) {
+    if (cocktailList[i].nombre.toLowerCase() == msg) {
+      return cocktailList[i];
+    }
+  }
 
-bebida = prompt("¿Qué bebida prepará?");
-cuantosVasos = glassQuantity();
-tamañoVasos = glassSize();
-let resultado = `Para preparar ${cuantosVasos} vasos de ${tamañoVasos}ml de ${bebida} necesitaras la siguiente cantidad de botellas: `;
-
-let cantIngredientes = parseInt(prompt("Ingrese la cantidad de ingredientes:"));
-while (isNaN(cantIngredientes) || cantIngredientes < 0) {
-  cantIngredientes = prompt(
-    "Por favor, solo ingrese números enteros mayores a 0."
-  );
+  alert("Por favor seleccione una bebida de la lista.");
+  return pickDrink();
 }
 
-for (let i = 1; i <= cantIngredientes; i++) {
-  resultado = `${resultado}\n${prompt(
-    "Nombre del ingrediente:"
-  )}: ${cantBotellas(tamañoVasos)} botella/as.`;
+addCocktail(
+  "Destornillador",
+  ["Vodka", "Jugo de Naranja"],
+  [66.67, 33.3],
+  "porcentaje"
+);
+addCocktail("Fernet", ["Fernet", "Coca-Cola"], [30, 70], "porcentaje");
+addCocktail("Campari", ["Campari", "Jugo de Naranja"], [50, 50], "porcentaje");
+
+alert("Bienvenido a la calculadora de cantidades para Bares.");
+const bebida = pickDrink();
+cuantosVasos = glassQuantity();
+tamañoVasos = glassSize();
+
+let resultado = `Para preparar ${cuantosVasos} vasos de ${tamañoVasos}ml de ${bebida.nombre} necesitaras la siguiente cantidad de botellas: `;
+
+for (let i = 0; i < bebida.ingredientes.length; i++) {
+  resultado = `${resultado}\n${bebida.ingredientes[i]}: ${cantBotellas(
+    bebida,
+    i
+  )} botella/as.`;
 }
 alert(resultado);
