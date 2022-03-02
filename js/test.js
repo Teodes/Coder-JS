@@ -1,31 +1,32 @@
-alert("Intenta adivinar el numero.");
-let num;
-let intentos = 1;
-let cantidadPartidas;
-let input;
+let cantidad = [
+  ["asd", 90],
+  ["ml", 2],
+];
 
-cantidadPartidas = parseInt(prompt("Ingrese cuantas veces quiere jugar."));
-
-for (i = 1; i <= cantidadPartidas; i++) {
-  num = Math.floor(Math.random() * 100) + 1;
-
-  input = prompt("Ronda " + i + ": Ingresa un numero entre 1 y 100");
-
-  while (num != input) {
-    if (input < num) {
-      input = prompt("Intenta con un numero mas grande.");
-    } else if (input > num) {
-      input = prompt("Intenta con un numero mas pequeño.");
+function separar() {
+  let propArray = [];
+  let unitArray = [];
+  let prop = "";
+  let unit = "";
+  for (let i = 0; i < cantidad.length; i++) {
+    for (let j = 0; j < cantidad[i].length; j++) {
+      if (!isNaN(parseInt(cantidad[i][j]))) {
+        prop = prop + cantidad[i][j];
+      } else if (
+        !isNaN(parseInt(cantidad[i][j - 1])) &&
+        cantidad[i][j] == " "
+      ) {
+        continue;
+      } else {
+        unit = unit + cantidad[i][j];
+      }
     }
-    intentos++;
+    propArray.push(prop);
+    prop = "";
+    unitArray.push(unit);
+    unit = "";
   }
-  alert("Ronda finalizada.");
-  alert(
-    "Ronda " +
-      i +
-      ": Felicidades, lograste dar con el numero en " +
-      intentos +
-      " intentos."
-  );
-  intentos = 1;
+  console.log(propArray);
+  console.log(unitArray);
 }
+separar();
