@@ -29,7 +29,7 @@ let botellas = [
   ["Jugo de Naranja", 3000],
 ];
 
-class cocktail {
+class Cocktail {
   constructor(nombre, ingredientes, proporcion, unidad, tamaño) {
     this.nombre = nombre;
     this.ingredientes = ingredientes;
@@ -39,7 +39,7 @@ class cocktail {
   }
 }
 
-class glass {
+class Glass {
   constructor(nombre, capacidad) {
     this.nombre = nombre;
     this.capacidad = capacidad;
@@ -47,7 +47,7 @@ class glass {
 }
 
 function addGlass(nombre, capacidad) {
-  glassList.push(new glass(nombre, capacidad));
+  glassList.push(new Glass(nombre, capacidad));
 }
 
 function addCocktail(nombre, ingredientes, cantidad, vaso) {
@@ -77,7 +77,7 @@ function addCocktail(nombre, ingredientes, cantidad, vaso) {
   const tamaño = glassList.find((el) => el.nombre == vaso);
 
   cocktailList.push(
-    new cocktail(nombre, ingredientes, propArray, unitArray, tamaño.capacidad)
+    new Cocktail(nombre, ingredientes, propArray, unitArray, tamaño.capacidad)
   );
 }
 
@@ -93,8 +93,9 @@ function glassQuantity() {
   return cuantosVasos;
 }
 
-//TODO: El parseInt() funciona correctamente a pesar de darle como parametro un string con palabras.
-// Ej: parseInt("15ml") da como output 15.
+//?El parseInt() funciona correctamente a pesar de darle como parametro un string con palabras.
+//?Ej: parseInt("15ml") da como output 15.
+
 function cantBotellas(bebida, numIngr) {
   let amountPerGlass = parseInt(bebida.proporcion[numIngr]);
   return Math.ceil(
@@ -107,7 +108,6 @@ function cantBotellas(bebida, numIngr) {
 function bottleCapacity(ingr) {
   for (let i = 0; i < botellas.length; i++) {
     if (botellas[i][0] == ingr) {
-      console.log("asd");
       return parseInt(botellas[i][1]);
     }
   }
@@ -229,19 +229,22 @@ alert("Bienvenido a la calculadora de cantidades para Bares.");
 const bebida = pickDrink();
 cuantosVasos = glassQuantity();
 
-let resultado = `Para preparar ${cuantosVasos} vasos de ${bebida.tamaño} de ${bebida.nombre} necesitaras la siguiente cantidad de ingredientes: `;
-let resultadoBotellas = "\n";
-let resultadoOtros = `\n\nTambien necesitaras los siguientes ingredientes:`;
+let resultado = document.createElement("h3");
+resultado.innerHTML = `Para preparar ${cuantosVasos} vasos de ${bebida.tamaño} de ${bebida.nombre} necesitaras la siguiente cantidad de ingredientes:`;
+document.querySelector(".resultado").appendChild(resultado);
+
+let testing = document.querySelector(".ingredientes");
 
 for (let i = 0; i < bebida.ingredientes.length; i++) {
   for (let j = 0; j < botellas.length; j++) {
     if (botellas[j][0] == bebida.ingredientes[i]) {
-      resultadoBotellas += `\n-${bebida.ingredientes[i]}: ${cantBotellas(
+      let drink = document.createElement("li");
+      drink.innerHTML = `<p>-${bebida.ingredientes[i]}: ${cantBotellas(
         bebida,
         i
-      )} botella/as.`;
+      )} botella/as.</p>`;
+      testing.appendChild(drink);
     }
     //TODO: Implementar demas ingredientes que no vienen en botella.
   }
 }
-alert(resultado + resultadoBotellas + resultadoOtros);
