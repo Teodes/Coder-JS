@@ -7,27 +7,78 @@ let cuantosVasos;
 let tamañoVasos;
 let cocktailList = [];
 let glassList = [];
+let bottleList = [];
 
 //TODO: Crear clase ingredientes.
 /*De momento se usaran arrays para realizar las comprobaciones,
   pero luego se utilizará una clase para definir si cada ingrediente es
   una bebida, jugo exprimido de fruta u otro tipo de ingrediente.*/
-
+class Bottle {
+  constructor(nombre, capacidad, volumenAlcohol, descripcion) {
+    this.nombre = nombre;
+    this.capacidad = capacidad;
+    this.volumenAlcohol = volumenAlcohol;
+    this.descripcion = descripcion;
+  }
+}
+function addBottle(nombre, capacidad, volumenAlcohol, descripcion) {
+  bottleList.push(new Bottle(nombre, capacidad, volumenAlcohol, descripcion));
+}
 let botellas = [
-  ["Vodka", 750],
-  ["Licor de Café", 750],
   ["Jugo de Tomate", 1000],
-  ["Cointreau", 700],
   ["Jugo de Arándano", 1500],
-  ["Ron Blanco", 750],
   ["Cola", 2500],
-  ["Tequila", 750],
-  ["Triple Sec", 750],
-  ["Ginebra", 750],
-  ["Champagne", 750],
   ["Soda", 2000],
   ["Jugo de Naranja", 3000],
 ];
+addBottle(
+  "Vodka",
+  750,
+  "40%",
+  "Se trata de una simple mezcla de alcohol y agua. Todas las bebidas alcohólicas —salvo el vodka— se componen de alcohol, agua y algo más. En ocasiones en la botella de vodka se hace constar las materias primas de proveniencia; pero ello es irrelevante desde el punto de vista de la composición del vodka: agua y alcohol. A lo más está levísimamente aromatizado."
+);
+addBottle(
+  "Licor de Café",
+  750,
+  "20%",
+  "Apareció en Jamaica en el siglo XVII. Es muy popular en Galicia, pudiéndose considerar licor tradicional, al que comúnmente se le llama simplemente licor café. Los habitantes de la ciudad de Orense presumen de su autoría, siendo la bebida graduada más popular de la zona. Está amparada por la denominación de origen local protegida Orujo de Galicia."
+);
+addBottle(
+  "Cointreau",
+  700,
+  "40%",
+  "Obtenido a partir de la destilación de cáscaras de naranja de variedades y procedencias diversas, tanto dulces como amargas. Las cáscaras se secan al sol, se maceran y se destilan en alambiques de cobre dando por resultado un aceite esencial que confiere al licor un aroma intenso y muy natural, entre dulce y amargo. Este aceite esencial se mezcla con alcohol, agua y azúcar en forma de almíbar y especias"
+);
+addBottle(
+  "Ron Blanco",
+  750,
+  "38%",
+  "Elaborado a partir de la fermentación y destilación de la melaza o el jugo de la caña de azúcar. La mayoría de su producción se encuentra en las Américas, y concretamente el Caribe, aunque también se da en otros países como las Filipinas o la India."
+);
+addBottle(
+  "Tequila",
+  750,
+  "40%",
+  "Es reconocida como la bebida más representativa de México. Siendo el tequila una bebida distinta al mezcal, se cree que una bebida no tendría ninguna relación en aspectos de elaboración ni destilación con el tequila, pero es de gran importancia mencionar que el tequila es considerado como un tipo específico de mezcal, siendo este obtenido del Agave tequilana de la variedad Weber Azul, siendo que el mezcal en sus distintas variedades puede ser obtenido de catorce distintos tipos de agave. De ahí la frase popular «se llama Tequila, pero se apellida Mezcal»."
+);
+addBottle(
+  "Triple Sec",
+  750,
+  "39%",
+  "El triple seco es el resultado de la triple destilación de una mezcla de cáscaras de naranjas dulces y amargas, maceradas en un alcohol neutro. Las naranjas se recolectan cuando aún están verdes, lo que asegura que la esencia obtenida tenga un aroma más pronunciado. Se añade agua y azúcar así como hierbas y otros ingredientes aromáticos que varían según las marcas."
+);
+addBottle(
+  "Ginebra",
+  700,
+  "40%",
+  "La ginebra es una bebida alcohólica destilada que posee un sabor predominante a nebrinas, los frutos del enebro (Juniperus communis). La ginebra es una de las categorías de destilados más amplia, con diversas regiones de producción, estilos y perfiles de sabor, que tienen en común las gálbulas o nebrinas de enebro."
+);
+addBottle(
+  "Champagne",
+  750,
+  "12%",
+  "El champán es un vino blanco o rosado espumoso elaborado con una mezcla (coupage o ensamblaje) entre las uvas chardonnay, meunier, pinot noir, pinot gris, pinot blanc, arbanne y petit meslier. Aunque la denominación de champán es exclusiva de la región de Champaña protegida por regímenes de calidad en la Unión Europea, popularmente se utiliza el término champán para denominar a los vinos espumosos elaborados en muchas regiones del mundo."
+);
 
 class Cocktail {
   constructor(nombre, ingredientes, proporcion, unidad, tamaño) {
@@ -106,9 +157,9 @@ function cantBotellas(bebida, numIngr) {
 
 //TODO: Esto debera ser modificado una vez que se implemente la clase ingredientes.
 function bottleCapacity(ingr) {
-  for (let i = 0; i < botellas.length; i++) {
-    if (botellas[i][0] == ingr) {
-      return parseInt(botellas[i][1]);
+  for (let i = 0; i < bottleList.length; i++) {
+    if (bottleList[i].nombre == ingr) {
+      return parseInt(bottleList[i].capacidad);
     }
   }
 }
@@ -225,26 +276,79 @@ addCocktail(
   "Highball"
 );
 
-alert("Bienvenido a la calculadora de cantidades para Bares.");
-const bebida = pickDrink();
-cuantosVasos = glassQuantity();
+//alert("Bienvenido a la calculadora de cantidades para Bares.");
+// const bebida = pickDrink();
+// cuantosVasos = glassQuantity();
 
-let resultado = document.createElement("h3");
-resultado.innerHTML = `Para preparar ${cuantosVasos} vasos de ${bebida.tamaño} de ${bebida.nombre} necesitaras la siguiente cantidad de ingredientes:`;
-document.querySelector(".resultado").appendChild(resultado);
+// let resultado = document.createElement("h3");
+// resultado.innerHTML = `Para preparar ${cuantosVasos} vasos de ${bebida.tamaño} de ${bebida.nombre} necesitaras la siguiente cantidad de ingredientes:`;
+// document.querySelector(".resultado").appendChild(resultado);
 
-let testing = document.querySelector(".ingredientes");
+// let testing = document.querySelector(".ingredientes");
 
-for (let i = 0; i < bebida.ingredientes.length; i++) {
-  for (let j = 0; j < botellas.length; j++) {
-    if (botellas[j][0] == bebida.ingredientes[i]) {
-      let drink = document.createElement("li");
-      drink.innerHTML = `<p>-${bebida.ingredientes[i]}: ${cantBotellas(
-        bebida,
-        i
-      )} botella/as.</p>`;
-      testing.appendChild(drink);
+// for (let i = 0; i < bebida.ingredientes.length; i++) {
+//   for (let j = 0; j < botellas.length; j++) {
+//     if (botellas[j][0] == bebida.ingredientes[i]) {
+//       let drink = document.createElement("li");
+//       drink.innerHTML = `<p>-${bebida.ingredientes[i]}: ${cantBotellas(
+//         bebida,
+//         i
+//       )} botella/as.</p>`;
+//       testing.appendChild(drink);
+//     }
+//     //TODO: Implementar demas ingredientes que no vienen en botella.
+//   }
+// }
+let randomBottle = Math.floor(Math.random() * botellas.length);
+
+function convertirNombre(nombre) {
+  return nombre.replaceAll(" ", "-").toLowerCase();
+}
+
+document.querySelector("#preview").innerHTML = `<div>
+<img src="./img/botellas/${convertirNombre(
+  bottleList[randomBottle].nombre
+)}.png" height="700px" alt="" />
+</div>
+<div class="info">
+<ul>
+  <li><h2>${bottleList[randomBottle].nombre}</h2></li>
+  <li>
+    <ul>
+    <li>${bottleList[randomBottle].volumenAlcohol}</li>
+    <li>${bottleList[randomBottle].capacidad} ml</li>
+    <li>${bottleList[randomBottle].descripcion}</li>
+    </ul>
+  </li>
+</ul>
+</div>`;
+
+let cocktailCard = document.createElement("div");
+
+document.querySelector(".btn--ingredientes").onclick = () =>
+  cardGenerator(bottleList);
+//document.querySelector(".btn--cocteles").onclick = cardGenerator(bottleList);
+document.querySelector(".btn--cocteles").onclick = () =>
+  cardGenerator(cocktailList);
+
+function cardGenerator(arr) {
+  cocktailCard.innerHTML = "";
+  arr.forEach((el) => {
+    let folder = "";
+    if (el instanceof Cocktail) {
+      folder = "cocteles";
+    } else if (el instanceof Bottle) {
+      folder = "botellas";
     }
-    //TODO: Implementar demas ingredientes que no vienen en botella.
-  }
+
+    cocktailCard.innerHTML += `<div class="card" style="width: 18rem;">
+    <img src="./img/${folder}/${convertirNombre(
+      el.nombre
+    )}.png" class="card-img-top" alt="..." style="height: 18rem;">
+    <div class="card-body">
+      <h5 class="card-title">${el.nombre}</h5>
+    </div>
+  </div>`;
+  });
+  document.querySelector("#DOM").appendChild(cocktailCard);
 }
