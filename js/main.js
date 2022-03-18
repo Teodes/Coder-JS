@@ -164,34 +164,6 @@ function bottleCapacity(ingr) {
   }
 }
 
-function pickDrink() {
-  cocktailList.sort((a, b) => {
-    if (a.nombre < b.nombre) {
-      return -1;
-    }
-    if (a.nombre > b.nombre) {
-      return 1;
-    }
-    return 0;
-  });
-  let msg = prompt(`¿Qué bebida preparará?${listofDrinks()}`).toLowerCase();
-  for (let i = 0; i < cocktailList.length; i++) {
-    if (cocktailList[i].nombre.toLowerCase() == msg) {
-      return cocktailList[i];
-    }
-  }
-  alert("Por favor seleccione una bebida de la lista.");
-  return pickDrink();
-}
-
-function listofDrinks() {
-  let list = "";
-  for (let i = 0; i < cocktailList.length; i++) {
-    list = `${list}\n-${cocktailList[i].nombre}`;
-  }
-  return list;
-}
-
 addGlass("Old Fashion", "250ml");
 addGlass("Highball", "300ml");
 addGlass("Copa Cóctel", "180ml");
@@ -276,16 +248,6 @@ addCocktail(
   "Highball"
 );
 
-//alert("Bienvenido a la calculadora de cantidades para Bares.");
-// const bebida = pickDrink();
-// cuantosVasos = glassQuantity();
-
-// let resultado = document.createElement("h3");
-// resultado.innerHTML = `Para preparar ${cuantosVasos} vasos de ${bebida.tamaño} de ${bebida.nombre} necesitaras la siguiente cantidad de ingredientes:`;
-// document.querySelector(".resultado").appendChild(resultado);
-
-// let testing = document.querySelector(".ingredientes");
-
 // for (let i = 0; i < bebida.ingredientes.length; i++) {
 //   for (let j = 0; j < botellas.length; j++) {
 //     if (botellas[j][0] == bebida.ingredientes[i]) {
@@ -296,7 +258,6 @@ addCocktail(
 //       )} botella/as.</p>`;
 //       testing.appendChild(drink);
 //     }
-//     //TODO: Implementar demas ingredientes que no vienen en botella.
 //   }
 // }
 let randomBottle = Math.floor(Math.random() * botellas.length);
@@ -335,7 +296,6 @@ document.querySelector(".btn--cocteles").onclick = () =>
 
 function cardGenerator(arr) {
   cocktailCard.innerHTML = "";
-
   arr.forEach((el) => {
     let folder = "";
     if (el instanceof Cocktail) {
@@ -345,7 +305,7 @@ function cardGenerator(arr) {
     }
 
     cocktailCard.innerHTML += `<div>
-    <button onclick="alert('outer')" class="card" style="width: 18rem;">
+    <button class="card" style="width: 18rem;">
     <img src="./img/${folder}/${convertirNombre(
       el.nombre
     )}.png" class="card-img-top" alt="..." style="height: 18rem;">
@@ -367,15 +327,19 @@ function cardGenerator(arr) {
             <label></label>
         </div>
     </div>
-      </div>`;
+      </div>
+      `;
   });
 
   document.querySelector("#DOM").appendChild(cocktailCard);
 
-  let boton = document.querySelectorAll("div .pretty");
+  let botonFav = document.querySelectorAll("div .pretty");
+  let botonCard = document.querySelectorAll("button.card");
   for (let i = 0; i < arr.length; i++) {
-    boton[i].onclick = () =>
-      changeState(boton[i].getElementsByTagName("input")[0], arr[i]);
+    botonFav[i].onclick = () =>
+      changeState(botonFav[i].getElementsByTagName("input")[0], arr[i]);
+
+    botonCard[i].onclick = () => calculo(arr[i]);
   }
 }
 
@@ -397,4 +361,19 @@ function isFaved(el) {
     }
   }
   return "";
+}
+
+function calculo(coctel) {
+  if (coctel instanceof Cocktail) {
+    let resultado = `Para preparar ${glassQuantity()} vasos de ${
+      coctel.tamaño
+    } de ${coctel.nombre} necesitaras la siguiente cantidad de ingredientes:`;
+    for (let i = 0; i < coctel.ingredientes.length; i++) {
+      resultado += `\n-${coctel.ingredientes[i]}: ${cantBotellas(
+        coctel,
+        i
+      )} botella/as.`;
+    }
+    alert(resultado);
+  }
 }
