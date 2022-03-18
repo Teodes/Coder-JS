@@ -324,15 +324,18 @@ document.querySelector("#preview").innerHTML = `<div>
 </div>`;
 
 let cocktailCard = document.createElement("div");
-
+let favedCards = [];
+if (!!JSON.parse(localStorage.getItem("Favoritos"))) {
+  favedCards = JSON.parse(localStorage.getItem("Favoritos"));
+}
 document.querySelector(".btn--ingredientes").onclick = () =>
   cardGenerator(bottleList);
-//document.querySelector(".btn--cocteles").onclick = cardGenerator(bottleList);
 document.querySelector(".btn--cocteles").onclick = () =>
   cardGenerator(cocktailList);
 
 function cardGenerator(arr) {
   cocktailCard.innerHTML = "";
+
   arr.forEach((el) => {
     let folder = "";
     if (el instanceof Cocktail) {
@@ -341,14 +344,57 @@ function cardGenerator(arr) {
       folder = "botellas";
     }
 
-    cocktailCard.innerHTML += `<div class="card" style="width: 18rem;">
+    cocktailCard.innerHTML += `<div>
+    <button onclick="alert('outer')" class="card" style="width: 18rem;">
     <img src="./img/${folder}/${convertirNombre(
       el.nombre
     )}.png" class="card-img-top" alt="..." style="height: 18rem;">
-    <div class="card-body">
+      
+      <div class="card-body">
       <h5 class="card-title">${el.nombre}</h5>
+      </div>
+      
+      </button>
+      <div class="pretty p-image p-toggle p-plain p-tada">
+        <input type="checkbox"${isFaved(el)}/>
+        <div class="state p-off">
+            <img class="image" src="./img/star-no-fill.png">
+            <label></label>
+        </div>
+        <div class="state p-on">
+            
+            <img class="image" src="./img/star-yellow.png">
+            <label></label>
+        </div>
     </div>
-  </div>`;
+      </div>`;
   });
+
   document.querySelector("#DOM").appendChild(cocktailCard);
+
+  let boton = document.querySelectorAll("div .pretty");
+  for (let i = 0; i < arr.length; i++) {
+    boton[i].onclick = () =>
+      changeState(boton[i].getElementsByTagName("input")[0], arr[i]);
+  }
+}
+
+function changeState(btn, arrEl) {
+  if (btn.checked) {
+    favedCards.push(arrEl);
+  } else {
+    favedCards = favedCards.filter(
+      (el) => JSON.stringify(el) != JSON.stringify(arrEl)
+    );
+  }
+  localStorage.setItem("Favoritos", JSON.stringify(favedCards));
+}
+
+function isFaved(el) {
+  for (let i = 0; i < favedCards.length; i++) {
+    if (JSON.stringify(favedCards[i]) === JSON.stringify(el)) {
+      return " checked";
+    }
+  }
+  return "";
 }

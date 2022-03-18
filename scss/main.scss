@@ -60,10 +60,22 @@ header {
 .card-title {
   color: black;
 }
-#DOM div {
+#DOM > div {
   display: flex;
   flex-wrap: wrap;
+  gap: 1rem;
   img {
     object-fit: contain;
+  }
+  > div {
+    position: relative;
+  }
+  .pretty {
+    position: absolute;
+    z-index: 4;
+    top: 5%;
+    right: 5%;
+    margin-right: 0;
+    transform: scale(2);
   }
 }
