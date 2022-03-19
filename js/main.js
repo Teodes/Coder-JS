@@ -79,7 +79,6 @@ addBottle(
   "12%",
   "El champán es un vino blanco o rosado espumoso elaborado con una mezcla (coupage o ensamblaje) entre las uvas chardonnay, meunier, pinot noir, pinot gris, pinot blanc, arbanne y petit meslier. Aunque la denominación de champán es exclusiva de la región de Champaña protegida por regímenes de calidad en la Unión Europea, popularmente se utiliza el término champán para denominar a los vinos espumosos elaborados en muchas regiones del mundo."
 );
-
 class Cocktail {
   constructor(nombre, ingredientes, proporcion, unidad, tamaño) {
     this.nombre = nombre;
@@ -163,7 +162,6 @@ function bottleCapacity(ingr) {
     }
   }
 }
-
 addGlass("Old Fashion", "250ml");
 addGlass("Highball", "300ml");
 addGlass("Copa Cóctel", "180ml");
@@ -248,18 +246,6 @@ addCocktail(
   "Highball"
 );
 
-// for (let i = 0; i < bebida.ingredientes.length; i++) {
-//   for (let j = 0; j < botellas.length; j++) {
-//     if (botellas[j][0] == bebida.ingredientes[i]) {
-//       let drink = document.createElement("li");
-//       drink.innerHTML = `<p>-${bebida.ingredientes[i]}: ${cantBotellas(
-//         bebida,
-//         i
-//       )} botella/as.</p>`;
-//       testing.appendChild(drink);
-//     }
-//   }
-// }
 let randomBottle = Math.floor(Math.random() * botellas.length);
 
 function convertirNombre(nombre) {
@@ -295,6 +281,12 @@ document.querySelector(".btn--cocteles").onclick = () =>
   cardGenerator(cocktailList);
 
 function cardGenerator(arr) {
+  if (!!document.querySelector("#DOM .sort-container")) {
+    document.querySelector("#DOM .sort-container").remove();
+  }
+
+  generateButtons(arr);
+
   cocktailCard.innerHTML = "";
   arr.forEach((el) => {
     let folder = "";
@@ -376,4 +368,118 @@ function calculo(coctel) {
     }
     alert(resultado);
   }
+}
+
+function generateButtons(arr) {
+  let orderButtons = document.createElement("div");
+  orderButtons.innerHTML = `<div class="sort-container">
+    <label>Ordenar por:</label>
+    <div class="dropdown">
+      <button
+        class="btn btn-secondary dropdown-toggle"
+        type="button"
+        id="dropdownMenuButton"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        Seleccionar
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <li>
+          <button
+            type="button"
+            class="dropdown-item"
+            data-mdb-ripple-color="dark"
+          >Nombre (A-Z)</button>
+        </li>
+        <li>
+          <button
+            type="button"
+            class="dropdown-item"
+            data-mdb-ripple-color="dark"
+          >Nombre (Z-A)</button>
+        </li>
+        <li>
+          <button
+            type="button"
+            class="dropdown-item"
+            data-mdb-ripple-color="dark"
+          >Mas Ingredientes</button>
+        </li>
+        <li>
+          <button
+            type="button"
+            class="dropdown-item"
+            data-mdb-ripple-color="dark"
+          >Menos Ingredientes</button>
+        </li>
+      </ul>
+    </div>
+  </div>`;
+  document.querySelector("#DOM").appendChild(orderButtons);
+
+  document.querySelectorAll(".dropdown-menu button").forEach((btn) => {
+    btn.onclick = () => {
+      switch (btn.textContent) {
+        case "Nombre (A-Z)":
+          arr.sort(sortByName());
+          break;
+        case "Nombre (Z-A)":
+          arr.sort(sortByName()).reverse();
+          break;
+        case "Mas Ingredientes":
+          arr.sort(sortByIngrQty()).reverse();
+          break;
+        case "Menos Ingredientes":
+          arr.sort(sortByIngrQty());
+          break;
+        case "Mas Usado":
+          arr.sort(sortByUsage()).reverse();
+          break;
+        case "Menos Usado":
+          arr.sort(sortByUsage());
+          break;
+      }
+      cardGenerator(arr);
+    };
+  });
+}
+
+function sortByName() {
+  return function (a, b) {
+    if (a.nombre < b.nombre) {
+      return -1;
+    } else if (a.nombre > b.nombre) {
+      return 1;
+    }
+    return 0;
+  };
+}
+function sortByIngrQty() {
+  return function (a, b) {
+    if (a.ingredientes.length < b.ingredientes.length) {
+      return -1;
+    } else {
+      return 1;
+    }
+  };
+}
+function sortByUsage() {
+  return function (a, b) {
+    if (inHowMany(a) < inHowMany(b)) {
+      return -1;
+    } else {
+      return 1;
+    }
+  };
+}
+function inHowMany(ingr) {
+  let howMany = 0;
+
+  cocktailList.forEach((coctel) => {
+    if (coctel.ingredientes.includes(ingr.nombre)) {
+      howMany++;
+    }
+  });
+  return howMany;
 }
