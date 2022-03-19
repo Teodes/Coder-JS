@@ -53,7 +53,8 @@ header a {
 #DOM > div {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem; }
+  gap: 1rem;
+  padding-top: 1rem; }
   #DOM > div img {
     object-fit: contain; }
   #DOM > div > div {
