@@ -282,7 +282,7 @@ document.querySelector(".btn--cocteles").onclick = () =>
 
 function cardGenerator(arr) {
   if (!!document.querySelector("#DOM .sort-container")) {
-    document.querySelector("#DOM .sort-container").remove();
+    document.querySelector("#DOM").firstChild.remove();
   }
 
   generateButtons(arr);
