@@ -372,6 +372,12 @@ function calculo(coctel) {
 
 function generateButtons(arr) {
   let orderButtons = document.createElement("div");
+  let btnType = [];
+  if (arr[0] instanceof Cocktail) {
+    btnType = ["Más Ingredientes", "Menos Ingredientes"];
+  } else if (arr[0] instanceof Bottle) {
+    btnType = ["Más Usado", "Menos Usado"];
+  }
   orderButtons.innerHTML = `<div class="sort-container">
     <label>Ordenar por:</label>
     <div class="dropdown">
@@ -404,14 +410,14 @@ function generateButtons(arr) {
             type="button"
             class="dropdown-item"
             data-mdb-ripple-color="dark"
-          >Mas Ingredientes</button>
+          >${btnType[0]}</button>
         </li>
         <li>
           <button
             type="button"
             class="dropdown-item"
             data-mdb-ripple-color="dark"
-          >Menos Ingredientes</button>
+          >${btnType[1]}</button>
         </li>
       </ul>
     </div>
@@ -427,13 +433,13 @@ function generateButtons(arr) {
         case "Nombre (Z-A)":
           arr.sort(sortByName()).reverse();
           break;
-        case "Mas Ingredientes":
+        case "Más Ingredientes":
           arr.sort(sortByIngrQty()).reverse();
           break;
         case "Menos Ingredientes":
           arr.sort(sortByIngrQty());
           break;
-        case "Mas Usado":
+        case "Más Usado":
           arr.sort(sortByUsage()).reverse();
           break;
         case "Menos Usado":
