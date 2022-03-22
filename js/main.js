@@ -450,33 +450,41 @@ function generateButtons(arr) {
     };
   });
 }
+// Filtros de Ordenamiento
 
+//Por Nombre
 function sortByName() {
   return function (a, b) {
-    if (a.nombre < b.nombre) {
-      return -1;
-    } else if (a.nombre > b.nombre) {
-      return 1;
-    }
-    return 0;
+    // if (a.nombre < b.nombre) {
+    //   return -1;
+    // } else if (a.nombre > b.nombre) {
+    //   return 1;
+    // }
+    a.nombre < b.nombre ? -1 : 1;
   };
 }
+
+//Por Cantidad de Ingredientes
 function sortByIngrQty() {
   return function (a, b) {
-    if (a.ingredientes.length < b.ingredientes.length) {
-      return -1;
-    } else {
-      return 1;
-    }
+    // if (a.ingredientes.length < b.ingredientes.length) {
+    //   return -1;
+    // } else {
+    //   return 1;
+    // }
+    a.ingredientes.length < b.ingredientes.length ? -1 : 1;
   };
 }
+
+//Por cantidad de tragos en los que se usa
 function sortByUsage() {
   return function (a, b) {
-    if (inHowMany(a) < inHowMany(b)) {
-      return -1;
-    } else {
-      return 1;
-    }
+    // if (inHowMany(a) < inHowMany(b)) {
+    //   return -1;
+    // } else {
+    //   return 1;
+    // }
+    inHowMany(a) < inHowMany(b) ? -1 : 1;
   };
 }
 function inHowMany(ingr) {
