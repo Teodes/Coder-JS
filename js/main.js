@@ -246,44 +246,47 @@ addCocktail(
   "Highball"
 );
 
-let randomBottle = Math.floor(Math.random() * botellas.length);
-
 function convertirNombre(nombre) {
   return nombre.replaceAll(" ", "-").toLowerCase();
 }
+function previewSection() {
+  let randomBottle = Math.floor(Math.random() * botellas.length);
+  const { nombre, volumenAlcohol, capacidad, descripcion } =
+    bottleList[randomBottle];
 
-document.querySelector("#preview").innerHTML = `<div>
-<img src="./img/botellas/${convertirNombre(
-  bottleList[randomBottle].nombre
-)}.png" height="700px" alt="" />
-</div>
-<div class="info">
-<ul>
-  <li><h2>${bottleList[randomBottle].nombre}</h2></li>
-  <li>
+  document.querySelector("#preview").innerHTML = `<div>
+    <img src="./img/botellas/${convertirNombre(
+      nombre
+    )}.png" height="700px" alt="" />
+    </div>
+    <div class="info">
     <ul>
-    <li>${bottleList[randomBottle].volumenAlcohol}</li>
-    <li>${bottleList[randomBottle].capacidad} ml</li>
-    <li>${bottleList[randomBottle].descripcion}</li>
+      <li><h2>${nombre}</h2></li>
+      <li>
+        <ul>
+        <li>${volumenAlcohol}</li>
+        <li>${capacidad} ml</li>
+        <li>${descripcion}</li>
+        </ul>
+      </li>
     </ul>
-  </li>
-</ul>
-</div>`;
+    </div>`;
+}
+
+previewSection();
 
 let cocktailCard = document.createElement("div");
-let favedCards = [];
-if (!!JSON.parse(localStorage.getItem("Favoritos"))) {
-  favedCards = JSON.parse(localStorage.getItem("Favoritos"));
-}
+
+let favedCards = JSON.parse(localStorage.getItem("Favoritos")) ?? [];
+
 document.querySelector(".btn--ingredientes").onclick = () =>
   cardGenerator(bottleList);
 document.querySelector(".btn--cocteles").onclick = () =>
   cardGenerator(cocktailList);
 
 function cardGenerator(arr) {
-  if (!!document.querySelector("#DOM .sort-container")) {
+  !!document.querySelector("#DOM .sort-container") &&
     document.querySelector("#DOM").firstChild.remove();
-  }
 
   generateButtons(arr);
 
@@ -455,45 +458,28 @@ function generateButtons(arr) {
 //Por Nombre
 function sortByName() {
   return function (a, b) {
-    // if (a.nombre < b.nombre) {
-    //   return -1;
-    // } else if (a.nombre > b.nombre) {
-    //   return 1;
-    // }
-    a.nombre < b.nombre ? -1 : 1;
+    return a.nombre < b.nombre ? -1 : 1;
   };
 }
 
 //Por Cantidad de Ingredientes
 function sortByIngrQty() {
   return function (a, b) {
-    // if (a.ingredientes.length < b.ingredientes.length) {
-    //   return -1;
-    // } else {
-    //   return 1;
-    // }
-    a.ingredientes.length < b.ingredientes.length ? -1 : 1;
+    return a.ingredientes.length < b.ingredientes.length ? -1 : 1;
   };
 }
 
 //Por cantidad de tragos en los que se usa
 function sortByUsage() {
   return function (a, b) {
-    // if (inHowMany(a) < inHowMany(b)) {
-    //   return -1;
-    // } else {
-    //   return 1;
-    // }
-    inHowMany(a) < inHowMany(b) ? -1 : 1;
+    return inHowMany(a) < inHowMany(b) ? -1 : 1;
   };
 }
 function inHowMany(ingr) {
   let howMany = 0;
 
   cocktailList.forEach((coctel) => {
-    if (coctel.ingredientes.includes(ingr.nombre)) {
-      howMany++;
-    }
+    coctel.ingredientes.includes(ingr.nombre) && howMany++;
   });
   return howMany;
 }
