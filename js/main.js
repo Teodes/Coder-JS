@@ -131,26 +131,13 @@ function addCocktail(nombre, ingredientes, cantidad, vaso) {
   );
 }
 
-function glassQuantity() {
-  cuantosVasos = parseInt(
-    prompt("Ingrese la cantidad de vasos que desea preparar.")
-  );
-  while (isNaN(cuantosVasos) || cuantosVasos <= 0) {
-    cuantosVasos = prompt(
-      "Por favor, solo ingrese números enteros mayores a 0."
-    );
-  }
-  return cuantosVasos;
-}
-
 //?El parseInt() funciona correctamente a pesar de darle como parametro un string con palabras.
 //?Ej: parseInt("15ml") da como output 15.
 
-function cantBotellas(bebida, numIngr) {
+function cantBotellas(bebida, numIngr, cantVasos) {
   let amountPerGlass = parseInt(bebida.proporcion[numIngr]);
   return Math.ceil(
-    (amountPerGlass * cuantosVasos) /
-      bottleCapacity(bebida.ingredientes[numIngr])
+    (amountPerGlass * cantVasos) / bottleCapacity(bebida.ingredientes[numIngr])
   );
 }
 
@@ -360,16 +347,54 @@ function isFaved(el) {
 
 function calculo(coctel) {
   if (coctel instanceof Cocktail) {
-    let resultado = `Para preparar ${glassQuantity()} vasos de ${
-      coctel.tamaño
-    } de ${coctel.nombre} necesitaras la siguiente cantidad de ingredientes:`;
-    for (let i = 0; i < coctel.ingredientes.length; i++) {
-      resultado += `\n-${coctel.ingredientes[i]}: ${cantBotellas(
-        coctel,
-        i
-      )} botella/as.`;
-    }
-    alert(resultado);
+    (async () => {
+      const { value: vasos } = await Swal.fire({
+        title: `${coctel.nombre}`,
+        text: "¿Cuántos vasos desea preparar?",
+        showCancelButton: true,
+        cancelButtonText: "Cancelar",
+        backdrop: `rgba(0,0,0,0.6)`,
+        imageHeight: 250,
+        imageUrl: `./img/${"cocteles"}/${convertirNombre(coctel.nombre)}.png`,
+        input: "text",
+        inputPlaceholder: "Ingrese un número",
+        customClass: {
+          validationMessage: "validationMsg",
+        },
+        //Input Validation
+        preConfirm: (num) => {
+          if (!num || isNaN(parseInt(num))) {
+            Swal.showValidationMessage(
+              '<i class="fa fa-info-circle"></i> Ingrese un número.'
+            );
+          } else if (num < 1) {
+            Swal.showValidationMessage(
+              '<i class="fa fa-info-circle"></i> Ingrese un número mayor a 0'
+            );
+          }
+        },
+      });
+
+      //Mostrar Ingredientes.
+      if (vasos) {
+        let ingrList = `Para preparar ${vasos} vasos de ${coctel.tamaño} de ${coctel.nombre} necesitaras la siguiente cantidad de ingredientes:<br><div>`;
+
+        for (let i = 0; i < coctel.ingredientes.length; i++) {
+          let numBotellas = cantBotellas(coctel, i, vasos);
+          let numGramatical = numBotellas > 1 ? "botellas." : "botella.";
+
+          ingrList += `<br>-${coctel.ingredientes[i]}: ${numBotellas} ${numGramatical}`;
+        }
+
+        Swal.fire({
+          title: `${coctel.nombre}`,
+          html: `${ingrList}</div>`,
+          backdrop: `rgba(0,0,0,0.6)`,
+          imageHeight: 250,
+          imageUrl: `./img/${"cocteles"}/${convertirNombre(coctel.nombre)}.png`,
+        });
+      }
+    })();
   }
 }
 
