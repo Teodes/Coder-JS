@@ -9,6 +9,109 @@ let cocktailList = [];
 let glassList = [];
 let bottleList = [];
 
+//Corroborar los nombres en la pagina IBA, luego comprarar con la API
+//En base a ello crear una lista de cocktails que será usada.
+//Guardar dicha lista en el localStorage.
+//Corroborar los ingredientes usados en todos esos cocteles para generar la lista de ingredientes.
+//Implementar un filtro de cocteles en base a ingredientes.
+let theUnforgettables = [
+  "alexander",
+  "americano",
+  "angel face",
+  "aviation",
+  "between the sheets",
+  "boulevardier",
+  "brandy crusta",
+  "casino",
+  "clover club",
+  "daiquiri",
+  "dry martini",
+  "gin fizz",
+  "hanky panky",
+  "john collins",
+  "last word",
+  "manhattan",
+  "martinez",
+  "mary pickford",
+  "monkey gland",
+  "negroni",
+  "old fashioned",
+  "paradise",
+  "planter's punch",
+  "porto flip",
+  "ramos gin fizz",
+  "rusty nail",
+  "sazerac",
+  "sidecar",
+  "stinger",
+  "tuxedo",
+  "vieux carrè",
+  "whiskey sour",
+  "white lady",
+];
+let contemporaryClassics = [
+  "bellini",
+  "black russian",
+  "bloody mary",
+  "caipirinha",
+  "champagne cocktail",
+  "corpse reviver",
+  "cosmopolitan",
+  "cuba libre",
+  "french 75",
+  "french connection",
+  "golden dream",
+  "grasshopper",
+  "hemingway special",
+  "horse's neck",
+  "irish coffee",
+  "kir",
+  "long island iced tea",
+  "mai tai",
+  "margarita",
+  "mimosa",
+  "mint julep",
+  "mojito",
+  "moscow mule",
+  "pina colada",
+  "pisco sour",
+  "sea breeze",
+  "sex on the beach",
+  "singapore sling",
+  "tequila sunrise",
+  "vesper",
+  "zombie",
+];
+let newEraDrinks = [
+  "trinidad sour",
+  "barracuda",
+  "bee's knees",
+  "bramble",
+  "canchanchara",
+  "dark and stormy",
+  "espresso martini",
+  "fernandito",
+  "french martini",
+  "illegal",
+  "lemon drop martini",
+  "naked and famous",
+  "new york sour",
+  "old cuban",
+  "paloma",
+  "paper plane",
+  "penicillin",
+  "russian spring punch",
+  "southside",
+  "spicy fifty",
+  "spritz",
+  "suffering bastard",
+  "tipperary",
+  "tommy's margarita",
+  "ve.n.to",
+  "yellow bird",
+];
+let undefinedDrinks = [];
+
 //TODO: Crear clase ingredientes.
 /*De momento se usaran arrays para realizar las comprobaciones,
   pero luego se utilizará una clase para definir si cada ingrediente es
@@ -259,6 +362,44 @@ function previewSection() {
     </ul>
     </div>`;
 }
+
+let cocktailListAPI = [];
+const getCocktails = async (arr) => {
+  for (const cocktailName of arr) {
+    const resp = await fetch(
+      `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${cocktailName.replace(
+        " ",
+        "_"
+      )}`
+    );
+    const data = await resp.json();
+
+    //En caso de no encontrar el cocktail en la api, colocar el nombre en la lista de undefined drinks
+    if (data.drinks == null) {
+      undefinedDrinks.push(cocktailName);
+
+      //En caso de haber 1 o mas matches en la busqueda de la API, corroborar que solo tome el exact match del cocktail
+      //para luego asignarlo a la lista de cockteles.
+    } else if (data.drinks.length >= 1) {
+      for (const drink of data.drinks) {
+        if (drink.strDrink.toLowerCase() === cocktailName.toLowerCase()) {
+          cocktailListAPI.push(drink);
+
+          //addCocktail(drink.strDrink, [], [], "");
+        }
+      }
+    }
+  }
+  console.log(cocktailListAPI);
+};
+function fetchDrinks() {
+  getCocktails(theUnforgettables);
+  getCocktails(contemporaryClassics);
+  getCocktails(newEraDrinks);
+}
+fetchDrinks();
+
+//TODO: Usar async await para crear un loading screen.
 
 previewSection();
 
