@@ -259,82 +259,82 @@ addGlass("Copa Margarita", "250ml");
 addGlass("Copa Flauta", "180ml");
 addGlass("Copa Hurricane", "400ml");
 
-addCocktail(
-  "Ruso Negro",
-  ["Vodka", "Licor de Café"],
-  ["50ml", "20ml"],
-  "Old Fashion"
-);
-addCocktail(
-  "Bloody Mary",
-  ["Vodka", "Jugo de Tomate", "Jugo de Limón", "Salsa Inglesa"],
-  ["45ml", "90ml", "15ml", "2 dashes"],
-  "Highball"
-);
-addCocktail(
-  "Cosmopolitan",
-  ["Vodka", "Cointreau", "Jugo de Limón", "Jugo de Arándano"],
-  ["40ml", "15ml", "15ml", "30ml"],
-  "Copa Cóctel"
-);
-addCocktail(
-  "Cuba Libre",
-  ["Ron Blanco", "Cola", "Jugo de Limón"],
-  ["50ml", "120ml", "10ml"],
-  "Highball"
-);
-addCocktail(
-  "Long Island Iced Tea",
-  [
-    "Tequila",
-    "Vodka",
-    "Ron Blanco",
-    "Triple Sec",
-    "Ginebra",
-    "Jugo de Limón",
-    "Almíbar Simple",
-    "Cola",
-  ],
-  ["15ml", "15ml", "15ml", "15ml", "15ml", "25ml", "30ml", "1 pizca"],
-  "Highball"
-);
-addCocktail(
-  "Margarita",
-  ["Tequila", "Cointreau", "Jugo de Limón"],
-  ["35ml", "20ml", "15ml"],
-  "Copa Margarita"
-);
-addCocktail(
-  "Mimosa",
-  ["Champagne", "Jugo de Naranja"],
-  ["75ml", "75ml"],
-  "Copa Flauta"
-);
-//TODO: Añadir cantidad "Completar".
-addCocktail(
-  "Mojito",
-  ["Ron Blanco", "Jugo de Limón", "Almíbar Simple", "Hojas de Menta", "Soda"],
-  ["40ml", "15ml", "30ml", "6 hojas", "Completar"],
-  "Highball"
-);
-addCocktail(
-  "Piña Colada",
-  ["Ron Blanco", "Jugo de Ananá", "Leche de Coco"],
-  ["30ml", "90ml", "30ml"],
-  "Copa Hurricane"
-);
-addCocktail(
-  "Sex on the Beach",
-  ["Vodka", "Licor de Durazno", "Jugo de Arándano", "Jugo de Naranja"],
-  ["40ml", "20ml", "40ml", "40ml"],
-  "Highball"
-);
-addCocktail(
-  "Tequila Sunrise",
-  ["Tequila", "Jugo de Naranja", "Granadina"],
-  ["45ml", "90ml", "15ml"],
-  "Highball"
-);
+// addCocktail(
+//   "Ruso Negro",
+//   ["Vodka", "Licor de Café"],
+//   ["50ml", "20ml"],
+//   "Old Fashion"
+// );
+// addCocktail(
+//   "Bloody Mary",
+//   ["Vodka", "Jugo de Tomate", "Jugo de Limón", "Salsa Inglesa"],
+//   ["45ml", "90ml", "15ml", "2 dashes"],
+//   "Highball"
+// );
+// addCocktail(
+//   "Cosmopolitan",
+//   ["Vodka", "Cointreau", "Jugo de Limón", "Jugo de Arándano"],
+//   ["40ml", "15ml", "15ml", "30ml"],
+//   "Copa Cóctel"
+// );
+// addCocktail(
+//   "Cuba Libre",
+//   ["Ron Blanco", "Cola", "Jugo de Limón"],
+//   ["50ml", "120ml", "10ml"],
+//   "Highball"
+// );
+// addCocktail(
+//   "Long Island Iced Tea",
+//   [
+//     "Tequila",
+//     "Vodka",
+//     "Ron Blanco",
+//     "Triple Sec",
+//     "Ginebra",
+//     "Jugo de Limón",
+//     "Almíbar Simple",
+//     "Cola",
+//   ],
+//   ["15ml", "15ml", "15ml", "15ml", "15ml", "25ml", "30ml", "1 pizca"],
+//   "Highball"
+// );
+// addCocktail(
+//   "Margarita",
+//   ["Tequila", "Cointreau", "Jugo de Limón"],
+//   ["35ml", "20ml", "15ml"],
+//   "Copa Margarita"
+// );
+// addCocktail(
+//   "Mimosa",
+//   ["Champagne", "Jugo de Naranja"],
+//   ["75ml", "75ml"],
+//   "Copa Flauta"
+// );
+// //TODO: Añadir cantidad "Completar".
+// addCocktail(
+//   "Mojito",
+//   ["Ron Blanco", "Jugo de Limón", "Almíbar Simple", "Hojas de Menta", "Soda"],
+//   ["40ml", "15ml", "30ml", "6 hojas", "Completar"],
+//   "Highball"
+// );
+// addCocktail(
+//   "Piña Colada",
+//   ["Ron Blanco", "Jugo de Ananá", "Leche de Coco"],
+//   ["30ml", "90ml", "30ml"],
+//   "Copa Hurricane"
+// );
+// addCocktail(
+//   "Sex on the Beach",
+//   ["Vodka", "Licor de Durazno", "Jugo de Arándano", "Jugo de Naranja"],
+//   ["40ml", "20ml", "40ml", "40ml"],
+//   "Highball"
+// );
+// addCocktail(
+//   "Tequila Sunrise",
+//   ["Tequila", "Jugo de Naranja", "Granadina"],
+//   ["45ml", "90ml", "15ml"],
+//   "Highball"
+// );
 
 function convertirNombre(nombre) {
   return nombre.replaceAll(" ", "-").toLowerCase();
@@ -363,8 +363,8 @@ function previewSection() {
     </div>`;
 }
 
-let cocktailListAPI = [];
 const getCocktails = async (arr) => {
+  let cocktailListAPI = [];
   for (const cocktailName of arr) {
     const resp = await fetch(
       `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${cocktailName.replace(
@@ -383,24 +383,58 @@ const getCocktails = async (arr) => {
     } else if (data.drinks.length >= 1) {
       for (const drink of data.drinks) {
         if (drink.strDrink.toLowerCase() === cocktailName.toLowerCase()) {
+          //TODO: aqui el push debe ser reemplazado por addCocktailFromAPI()
           cocktailListAPI.push(drink);
-
-          //addCocktail(drink.strDrink, [], [], "");
         }
       }
     }
   }
-  console.log(cocktailListAPI);
+  return cocktailListAPI;
 };
-function fetchDrinks() {
-  getCocktails(theUnforgettables);
-  getCocktails(contemporaryClassics);
-  getCocktails(newEraDrinks);
+async function fetchDrinks() {
+  const tU = getCocktails(theUnforgettables);
+  const cC = getCocktails(contemporaryClassics);
+  const nED = getCocktails(newEraDrinks);
+  const API = await Promise.all([tU, cC, nED]);
+
+  return API;
 }
-fetchDrinks();
 
-//TODO: Usar async await para crear un loading screen.
+fetchDrinks()
+  .then((listsAPI) => {
+    for (const listAPI of listsAPI) {
+      let list = listAPI.sort((a, b) => a.strDrink - b.strDrink);
+      for (const data of list) {
+        cocktailList.push(data);
+      }
+    }
+    //console.log(cocktailList);
+    drink = cocktailList[0];
+    console.log(Object.entries(drink));
+    for (let i = 0; i < Object.entries(drink).length; i++) {
+      let propertie = Object.entries(drink)[i];
+      if (propertie[0].includes("strIngredient")) {
+        //continuar creando la logica para añadir los ingredientes
+        //y su proporcion poara ser usados en la funcion
+        //que se encarga de crear los cocteles desde la api.
+        //luego modificar la clase para agregar la foto como propiedad.
+      }
+    }
+  })
+  //TODO: Usar async await para crear un loading screen.
+  .then();
 
+function addCocktailFromAPI(drink) {
+  cocktailList.push(
+    new Cocktail(
+      drink.strDrink,
+      [ingredientes],
+      [proporcion],
+      [unidad],
+      "Highball"
+    )
+  );
+}
 previewSection();
 
 let cocktailCard = document.createElement("div");
