@@ -124,8 +124,18 @@ class Bottle {
     this.descripcion = descripcion;
   }
 }
-function addBottle(nombre, capacidad, volumenAlcohol, descripcion) {
-  bottleList.push(new Bottle(nombre, capacidad, volumenAlcohol, descripcion));
+function addBottle(nombre, volumenAlcohol, descripcion) {
+  let alreadyExist = false;
+
+  for (let i = 0; i < bottleList.length; i++) {
+    if (bottleList[i].nombre == nombre) {
+      alreadyExist = true;
+    }
+  }
+
+  if (!alreadyExist) {
+    bottleList.push(new Bottle(nombre, volumenAlcohol, descripcion));
+  }
 }
 let botellas = [
   ["Jugo de Tomate", 1000],
@@ -183,12 +193,13 @@ addBottle(
   "El champán es un vino blanco o rosado espumoso elaborado con una mezcla (coupage o ensamblaje) entre las uvas chardonnay, meunier, pinot noir, pinot gris, pinot blanc, arbanne y petit meslier. Aunque la denominación de champán es exclusiva de la región de Champaña protegida por regímenes de calidad en la Unión Europea, popularmente se utiliza el término champán para denominar a los vinos espumosos elaborados en muchas regiones del mundo."
 );
 class Cocktail {
-  constructor(nombre, ingredientes, proporcion, unidad, tamaño) {
+  constructor(nombre, ingredientes, proporcion, unidad, imgURL) {
     this.nombre = nombre;
     this.ingredientes = ingredientes;
     this.proporcion = proporcion;
     this.unidad = unidad;
-    this.tamaño = tamaño;
+    //this.tamaño = tamaño;
+    this.imgURL = imgURL;
   }
 }
 
@@ -364,7 +375,6 @@ function previewSection() {
 }
 
 const getCocktails = async (arr) => {
-  let cocktailListAPI = [];
   for (const cocktailName of arr) {
     const resp = await fetch(
       `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${cocktailName.replace(
@@ -383,58 +393,85 @@ const getCocktails = async (arr) => {
     } else if (data.drinks.length >= 1) {
       for (const drink of data.drinks) {
         if (drink.strDrink.toLowerCase() === cocktailName.toLowerCase()) {
-          //TODO: aqui el push debe ser reemplazado por addCocktailFromAPI()
-          cocktailListAPI.push(drink);
+          addCocktailFromAPI(drink);
         }
       }
     }
   }
-  return cocktailListAPI;
+  return cocktailList;
 };
 async function fetchDrinks() {
   const tU = getCocktails(theUnforgettables);
   const cC = getCocktails(contemporaryClassics);
   const nED = getCocktails(newEraDrinks);
-  const API = await Promise.all([tU, cC, nED]);
+  await Promise.all([tU, cC, nED]);
 
-  return API;
+  return cocktailList;
 }
-
-fetchDrinks()
-  .then((listsAPI) => {
-    for (const listAPI of listsAPI) {
-      let list = listAPI.sort((a, b) => a.strDrink - b.strDrink);
-      for (const data of list) {
-        cocktailList.push(data);
-      }
-    }
-    //console.log(cocktailList);
-    drink = cocktailList[0];
-    console.log(Object.entries(drink));
-    for (let i = 0; i < Object.entries(drink).length; i++) {
-      let propertie = Object.entries(drink)[i];
-      if (propertie[0].includes("strIngredient")) {
-        //continuar creando la logica para añadir los ingredientes
-        //y su proporcion poara ser usados en la funcion
-        //que se encarga de crear los cocteles desde la api.
-        //luego modificar la clase para agregar la foto como propiedad.
-      }
-    }
-  })
-  //TODO: Usar async await para crear un loading screen.
-  .then();
-
 function addCocktailFromAPI(drink) {
+  let ingredientes = [];
+  let proporcion = [];
+  let unidad = [];
+
+  for (let i = 0; i < Object.entries(drink).length; i++) {
+    let propertieName = Object.entries(drink)[i][0];
+    let propertieValue = Object.entries(drink)[i][1];
+
+    //continuar creando la logica para añadir los ingredientes
+    //y su proporcion poara ser usados en la funcion
+    //que se encarga de crear los cocteles desde la api.
+    //luego modificar la clase para agregar la foto como propiedad.
+
+    if (propertieName.includes("strIngredient") && propertieValue != null) {
+      ingredientes.push(propertieValue);
+    } else if (propertieName.includes("strMeasure") && propertieValue != null) {
+      //Añadir la logica necesaria para realizar el parseFloat
+      proporcion.push(propertieValue);
+      //Ampliar luego, de momento usare Oz para todo.
+      unidad.push("Oz");
+    }
+  }
+
   cocktailList.push(
     new Cocktail(
       drink.strDrink,
-      [ingredientes],
-      [proporcion],
-      [unidad],
-      "Highball"
+      ingredientes,
+      proporcion,
+      unidad,
+      drink.strDrinkThumb
     )
   );
 }
+fetchDrinks().then((cocktailList) => {
+  let ingrArr = [];
+
+  for (const cocktail of cocktailList) {
+    for (const ingr of cocktail.ingredientes) {
+      ingrArr.push(ingr);
+    }
+  }
+  //Elimina Repetidos.
+  bottleList = ingrArr.filter((nombre, i, a) => a.indexOf(nombre) === i);
+
+  return bottleList;
+});
+//TODO: Usar async await para crear un loading screen.
+
+//! TODO: Hacer Fetch a los ingredientes.
+// .then((bottleList) => {
+//   for (const ingr of bottleList) {
+
+//     const resp = await fetch(
+//       `https://www.thecocktaildb.com/api/json/v1/1/search.php?i=${ingr.replace(
+//         " ",
+//         "_"
+//       )}`
+//     );
+//     const data = await resp.json();
+
+//   }
+// });
+
 previewSection();
 
 let cocktailCard = document.createElement("div");
@@ -463,9 +500,9 @@ function cardGenerator(arr) {
 
     cocktailCard.innerHTML += `<div>
     <button class="card" style="width: 18rem;">
-    <img src="./img/${folder}/${convertirNombre(
-      el.nombre
-    )}.png" class="card-img-top" alt="..." style="height: 18rem;">
+    <img src="${
+      el.imgURL
+    }" class="card-img-top" alt="..." style="height: 18rem;">
       
       <div class="card-body">
       <h5 class="card-title">${el.nombre}</h5>
@@ -530,7 +567,7 @@ function calculo(coctel) {
         cancelButtonText: "Cancelar",
         backdrop: `rgba(0,0,0,0.6)`,
         imageHeight: 250,
-        imageUrl: `./img/${"cocteles"}/${convertirNombre(coctel.nombre)}.png`,
+        imageUrl: coctel.imgURL,
         input: "text",
         inputPlaceholder: "Ingrese un número",
         customClass: {
@@ -566,7 +603,7 @@ function calculo(coctel) {
           html: `${ingrList}</div>`,
           backdrop: `rgba(0,0,0,0.6)`,
           imageHeight: 250,
-          imageUrl: `./img/${"cocteles"}/${convertirNombre(coctel.nombre)}.png`,
+          imageUrl: coctel.imgURL,
         });
       }
     })();
