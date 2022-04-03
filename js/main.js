@@ -8,6 +8,7 @@ let tamañoVasos;
 let cocktailList = [];
 let glassList = [];
 let bottleList = [];
+let ingredientList = [];
 
 //Corroborar los nombres en la pagina IBA, luego comprarar con la API
 //En base a ello crear una lista de cocktails que será usada.
@@ -113,9 +114,26 @@ let newEraDrinks = [
 let undefinedDrinks = [];
 
 //TODO: Crear clase ingredientes.
-/*De momento se usaran arrays para realizar las comprobaciones,
-  pero luego se utilizará una clase para definir si cada ingrediente es
-  una bebida, jugo exprimido de fruta u otro tipo de ingrediente.*/
+class Ingredient {
+  constructor(nombre, imgURL, volumenAlcohol) {
+    this.nombre = nombre;
+    this.imgURL = imgURL;
+    this.volumenAlcohol = volumenAlcohol;
+  }
+}
+
+function addIngredient(nombre, imgURL, containsAlcohol, volumenAlcohol) {
+  let alcohol;
+  if (containsAlcohol == null || containsAlcohol != "Yes") {
+    alcohol = null;
+  } else if (containsAlcohol == "Yes" && volumenAlcohol == null) {
+    alcohol = "Depending on the brand.";
+  } else {
+    alcohol = volumenAlcohol;
+  }
+  ingredientList.push(new Ingredient(nombre, imgURL, alcohol));
+}
+
 class Bottle {
   constructor(nombre, capacidad, volumenAlcohol, descripcion) {
     this.nombre = nombre;
@@ -374,40 +392,45 @@ function previewSection() {
     </div>`;
 }
 
-const getCocktails = async (arr) => {
-  for (const cocktailName of arr) {
-    const resp = await fetch(
-      `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${cocktailName.replace(
-        " ",
-        "_"
-      )}`
-    );
-    const data = await resp.json();
+const fetchCocktails = async (name) => {
+  const resp = await fetch(
+    `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${name.replace(
+      " ",
+      "_"
+    )}`
+  );
+  const data = await resp.json();
+  //En caso de no encontrar el cocktail en la api, colocar el nombre en la lista de undefined drinks
+  if (data.drinks == null) {
+    undefinedDrinks.push(name);
 
-    //En caso de no encontrar el cocktail en la api, colocar el nombre en la lista de undefined drinks
-    if (data.drinks == null) {
-      undefinedDrinks.push(cocktailName);
-
-      //En caso de haber 1 o mas matches en la busqueda de la API, corroborar que solo tome el exact match del cocktail
-      //para luego asignarlo a la lista de cockteles.
-    } else if (data.drinks.length >= 1) {
-      for (const drink of data.drinks) {
-        if (drink.strDrink.toLowerCase() === cocktailName.toLowerCase()) {
-          addCocktailFromAPI(drink);
-        }
+    //En caso de haber 1 o mas matches en la busqueda de la API, corroborar que solo tome el exact match del cocktail
+    //para luego asignarlo a la lista de cockteles.
+  } else if (data.drinks.length >= 1) {
+    for (const drink of data.drinks) {
+      if (drink.strDrink.toLowerCase() === name.toLowerCase()) {
+        addCocktailFromAPI(drink);
       }
     }
   }
-  return cocktailList;
+  //? Hasta aca funciona.
+  return data;
 };
-async function fetchDrinks() {
-  const tU = getCocktails(theUnforgettables);
-  const cC = getCocktails(contemporaryClassics);
-  const nED = getCocktails(newEraDrinks);
-  await Promise.all([tU, cC, nED]);
 
-  return cocktailList;
+async function fetchDrinks() {
+  let promesas = [];
+  const arr = theUnforgettables
+    .concat(contemporaryClassics)
+    .concat(newEraDrinks);
+
+  for (let i = 0; i < arr.length; i++) {
+    promesas.push(fetchCocktails(arr[i]));
+  }
+
+  const finished = Promise.all(promesas);
+  return finished;
 }
+
 function addCocktailFromAPI(drink) {
   let ingredientes = [];
   let proporcion = [];
@@ -442,35 +465,53 @@ function addCocktailFromAPI(drink) {
     )
   );
 }
-fetchDrinks().then((cocktailList) => {
-  let ingrArr = [];
 
+//! Llamada a la API. !//
+fetchDrinks().then(async () => {
+  let ingrArr = [];
   for (const cocktail of cocktailList) {
     for (const ingr of cocktail.ingredientes) {
       ingrArr.push(ingr);
     }
   }
   //Elimina Repetidos.
-  bottleList = ingrArr.filter((nombre, i, a) => a.indexOf(nombre) === i);
+  let filteredIngrArr = ingrArr.filter(
+    (nombre, i, a) => a.indexOf(nombre) === i
+  );
 
-  return bottleList;
+  //TODO: Aun quedan elementos duplicados debido a lowercase.
+  console.log(filteredIngrArr.sort());
+
+  let promesas = [];
+  for (const ingr of filteredIngrArr) {
+    promesas.push(fetchIngr(ingr));
+  }
+  await Promise.all(promesas);
+  console.log(ingredientList);
 });
-//TODO: Usar async await para crear un loading screen.
 
-//! TODO: Hacer Fetch a los ingredientes.
-// .then((bottleList) => {
-//   for (const ingr of bottleList) {
-
-//     const resp = await fetch(
-//       `https://www.thecocktaildb.com/api/json/v1/1/search.php?i=${ingr.replace(
-//         " ",
-//         "_"
-//       )}`
-//     );
-//     const data = await resp.json();
-
-//   }
-// });
+async function fetchIngr(name) {
+  console.log("¡¡¡WORKING!!!");
+  const ingr = await fetch(
+    `https://www.thecocktaildb.com/api/json/v1/1/search.php?i=${name.replace(
+      " ",
+      "_"
+    )}`
+  );
+  const data = await ingr.json();
+  //console.log(data.ingredients[0].strIngredient);
+  let nameIngr = data.ingredients[0].strIngredient;
+  addIngredient(
+    nameIngr,
+    `www.thecocktaildb.com/images/ingredients/${nameIngr.replace(
+      " ",
+      "_"
+    )}-Medium.png`,
+    data.ingredients[0].strAlcohol,
+    data.ingredients[0].strABV
+  );
+  return data;
+}
 
 previewSection();
 
@@ -479,7 +520,7 @@ let cocktailCard = document.createElement("div");
 let favedCards = JSON.parse(localStorage.getItem("Favoritos")) ?? [];
 
 document.querySelector(".btn--ingredientes").onclick = () =>
-  cardGenerator(bottleList);
+  cardGenerator(ingredientList);
 document.querySelector(".btn--cocteles").onclick = () =>
   cardGenerator(cocktailList);
 
@@ -491,18 +532,16 @@ function cardGenerator(arr) {
 
   cocktailCard.innerHTML = "";
   arr.forEach((el) => {
-    let folder = "";
+    let url;
     if (el instanceof Cocktail) {
-      folder = "cocteles";
-    } else if (el instanceof Bottle) {
-      folder = "botellas";
+      url = el.imgURL;
+    } else if (el instanceof Ingredient) {
+      url = "https://" + el.imgURL;
     }
 
     cocktailCard.innerHTML += `<div>
     <button class="card" style="width: 18rem;">
-    <img src="${
-      el.imgURL
-    }" class="card-img-top" alt="..." style="height: 18rem;">
+    <img src="${url}" class="card-img-top" alt="..." style="height: 18rem;">
       
       <div class="card-body">
       <h5 class="card-title">${el.nombre}</h5>
