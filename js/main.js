@@ -503,10 +503,7 @@ async function fetchIngr(name) {
   let nameIngr = data.ingredients[0].strIngredient;
   addIngredient(
     nameIngr,
-    `www.thecocktaildb.com/images/ingredients/${nameIngr.replace(
-      " ",
-      "_"
-    )}-Medium.png`,
+    `www.thecocktaildb.com/images/ingredients/${nameIngr}-Medium.png`,
     data.ingredients[0].strAlcohol,
     data.ingredients[0].strABV
   );
