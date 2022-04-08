@@ -10,10 +10,6 @@ let glassList = [];
 let bottleList = [];
 let ingredientList = [];
 
-//Corroborar los nombres en la pagina IBA, luego comprarar con la API
-//En base a ello crear una lista de cocktails que será usada.
-//Guardar dicha lista en el localStorage.
-//Corroborar los ingredientes usados en todos esos cocteles para generar la lista de ingredientes.
 //Implementar un filtro de cocteles en base a ingredientes.
 let theUnforgettables = [
   "alexander",
@@ -111,9 +107,7 @@ let newEraDrinks = [
   "ve.n.to",
   "yellow bird",
 ];
-let undefinedDrinks = [];
 
-//TODO: Crear clase ingredientes.
 class Ingredient {
   constructor(nombre, imgURL, volumenAlcohol) {
     this.nombre = nombre;
@@ -232,6 +226,7 @@ function addGlass(nombre, capacidad) {
   glassList.push(new Glass(nombre, capacidad));
 }
 
+//TODO: Borrar luego, sin uso.
 function addCocktail(nombre, ingredientes, cantidad, vaso) {
   let propArray = [];
   let unitArray = [];
@@ -288,83 +283,6 @@ addGlass("Copa Margarita", "250ml");
 addGlass("Copa Flauta", "180ml");
 addGlass("Copa Hurricane", "400ml");
 
-// addCocktail(
-//   "Ruso Negro",
-//   ["Vodka", "Licor de Café"],
-//   ["50ml", "20ml"],
-//   "Old Fashion"
-// );
-// addCocktail(
-//   "Bloody Mary",
-//   ["Vodka", "Jugo de Tomate", "Jugo de Limón", "Salsa Inglesa"],
-//   ["45ml", "90ml", "15ml", "2 dashes"],
-//   "Highball"
-// );
-// addCocktail(
-//   "Cosmopolitan",
-//   ["Vodka", "Cointreau", "Jugo de Limón", "Jugo de Arándano"],
-//   ["40ml", "15ml", "15ml", "30ml"],
-//   "Copa Cóctel"
-// );
-// addCocktail(
-//   "Cuba Libre",
-//   ["Ron Blanco", "Cola", "Jugo de Limón"],
-//   ["50ml", "120ml", "10ml"],
-//   "Highball"
-// );
-// addCocktail(
-//   "Long Island Iced Tea",
-//   [
-//     "Tequila",
-//     "Vodka",
-//     "Ron Blanco",
-//     "Triple Sec",
-//     "Ginebra",
-//     "Jugo de Limón",
-//     "Almíbar Simple",
-//     "Cola",
-//   ],
-//   ["15ml", "15ml", "15ml", "15ml", "15ml", "25ml", "30ml", "1 pizca"],
-//   "Highball"
-// );
-// addCocktail(
-//   "Margarita",
-//   ["Tequila", "Cointreau", "Jugo de Limón"],
-//   ["35ml", "20ml", "15ml"],
-//   "Copa Margarita"
-// );
-// addCocktail(
-//   "Mimosa",
-//   ["Champagne", "Jugo de Naranja"],
-//   ["75ml", "75ml"],
-//   "Copa Flauta"
-// );
-// //TODO: Añadir cantidad "Completar".
-// addCocktail(
-//   "Mojito",
-//   ["Ron Blanco", "Jugo de Limón", "Almíbar Simple", "Hojas de Menta", "Soda"],
-//   ["40ml", "15ml", "30ml", "6 hojas", "Completar"],
-//   "Highball"
-// );
-// addCocktail(
-//   "Piña Colada",
-//   ["Ron Blanco", "Jugo de Ananá", "Leche de Coco"],
-//   ["30ml", "90ml", "30ml"],
-//   "Copa Hurricane"
-// );
-// addCocktail(
-//   "Sex on the Beach",
-//   ["Vodka", "Licor de Durazno", "Jugo de Arándano", "Jugo de Naranja"],
-//   ["40ml", "20ml", "40ml", "40ml"],
-//   "Highball"
-// );
-// addCocktail(
-//   "Tequila Sunrise",
-//   ["Tequila", "Jugo de Naranja", "Granadina"],
-//   ["45ml", "90ml", "15ml"],
-//   "Highball"
-// );
-
 function convertirNombre(nombre) {
   return nombre.replaceAll(" ", "-").toLowerCase();
 }
@@ -400,12 +318,8 @@ const fetchCocktails = async (name) => {
     )}`
   );
   const data = await resp.json();
-  //En caso de no encontrar el cocktail en la api, colocar el nombre en la lista de undefined drinks
-  if (data.drinks == null) {
-    undefinedDrinks.push(name);
 
-    //En caso de haber 1 o mas matches en la busqueda de la API, corroborar que solo tome el exact match del cocktail
-    //para luego asignarlo a la lista de cockteles.
+  if (data.drinks == null) {
   } else if (data.drinks.length >= 1) {
     for (const drink of data.drinks) {
       if (drink.strDrink.toLowerCase() === name.toLowerCase()) {
@@ -448,9 +362,9 @@ function addCocktailFromAPI(drink) {
     if (propertieName.includes("strIngredient") && propertieValue != null) {
       ingredientes.push(propertieValue);
     } else if (propertieName.includes("strMeasure") && propertieValue != null) {
-      //Añadir la logica necesaria para realizar el parseFloat
+      //TODO: Añadir la logica necesaria para realizar el parseFloat
       proporcion.push(propertieValue);
-      //Ampliar luego, de momento usare Oz para todo.
+      //TODO: Ampliar luego, de momento usare Oz para todo.
       unidad.push("Oz");
     }
   }
@@ -481,7 +395,6 @@ fetchDrinks().then(async () => {
     (nombre, i, a) => a.indexOf(nombre) === i
   );
 
-  //TODO: Aun quedan elementos duplicados debido a lowercase.
   console.log(filteredIngrArr.sort());
 
   let promesas = [];
@@ -522,10 +435,12 @@ let cocktailCard = document.createElement("div");
 
 let favedCards = JSON.parse(localStorage.getItem("Favoritos")) ?? [];
 
-document.querySelector(".btn--ingredientes").onclick = () =>
-  cardGenerator(ingredientList);
-document.querySelector(".btn--cocteles").onclick = () =>
-  cardGenerator(cocktailList);
+document
+  .querySelector(".btn--ingredientes")
+  .addEventListener("click", () => cardGenerator(ingredientList));
+document
+  .querySelector(".btn--cocteles")
+  .addEventListener("click", () => cardGenerator(cocktailList));
 
 function cardGenerator(arr) {
   !!document.querySelector("#DOM .sort-container") &&
@@ -535,16 +450,11 @@ function cardGenerator(arr) {
 
   cocktailCard.innerHTML = "";
   arr.forEach((el) => {
-    let url;
-    if (el instanceof Cocktail) {
-      url = el.imgURL;
-    } else if (el instanceof Ingredient) {
-      url = "https://" + el.imgURL;
-    }
-
     cocktailCard.innerHTML += `<div>
     <button class="card" style="width: 18rem;">
-    <img src="${url}" class="card-img-top" alt="..." style="height: 18rem;">
+    <img src="${
+      el.imgURL
+    }" class="card-img-top" alt="..." style="height: 18rem;">
       
       <div class="card-body">
       <h5 class="card-title">${el.nombre}</h5>
@@ -574,8 +484,11 @@ function cardGenerator(arr) {
   for (let i = 0; i < arr.length; i++) {
     botonFav[i].onclick = () =>
       changeState(botonFav[i].getElementsByTagName("input")[0], arr[i]);
-
-    botonCard[i].onclick = () => calculo(arr[i]);
+    if (arr[i] instanceof Ingredient) {
+      botonCard[i].onclick = () => filterByIngr(arr[i]);
+    } else if (arr[i] instanceof Cocktail) {
+      botonCard[i].onclick = () => calculo(arr[i]);
+    }
   }
 }
 
@@ -597,6 +510,16 @@ function isFaved(el) {
     }
   }
   return "";
+}
+function filterByIngr(ingr) {
+  let resultado = cocktailList.filter((cocktail) => {
+    let lowerCaseIngrList = [];
+    for (const ingr of cocktail.ingredientes) {
+      lowerCaseIngrList.push(ingr.toLowerCase());
+    }
+    return lowerCaseIngrList.includes(ingr.nombre.toLowerCase());
+  });
+  cardGenerator(resultado);
 }
 
 function calculo(coctel) {
@@ -657,7 +580,7 @@ function generateButtons(arr) {
   let btnType = [];
   if (arr[0] instanceof Cocktail) {
     btnType = ["Más Ingredientes", "Menos Ingredientes"];
-  } else if (arr[0] instanceof Bottle) {
+  } else if (arr[0] instanceof Ingredient) {
     btnType = ["Más Usado", "Menos Usado"];
   }
   orderButtons.innerHTML = `<div class="sort-container">
