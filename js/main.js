@@ -471,7 +471,9 @@ fetchDrinks().then(async () => {
   let ingrArr = [];
   for (const cocktail of cocktailList) {
     for (const ingr of cocktail.ingredientes) {
-      ingrArr.push(ingr);
+      if (ingr != "") {
+        ingrArr.push(ingr.toLowerCase());
+      }
     }
   }
   //Elimina Repetidos.
@@ -502,12 +504,16 @@ async function fetchIngr(name) {
   //console.log(data.ingredients[0].strIngredient);
   let nameIngr = data.ingredients[0].strIngredient;
   addIngredient(
-    nameIngr,
-    `www.thecocktaildb.com/images/ingredients/${nameIngr}-Medium.png`,
+    capitalizeFirstLetter(nameIngr),
+    `https://www.thecocktaildb.com/images/ingredients/${nameIngr}-Medium.png`,
     data.ingredients[0].strAlcohol,
     data.ingredients[0].strABV
   );
   return data;
+}
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 previewSection();
