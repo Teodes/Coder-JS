@@ -109,14 +109,21 @@ let newEraDrinks = [
 ];
 
 class Ingredient {
-  constructor(nombre, imgURL, volumenAlcohol) {
+  constructor(nombre, imgURL, volumenAlcohol, descripcion) {
     this.nombre = nombre;
     this.imgURL = imgURL;
     this.volumenAlcohol = volumenAlcohol;
+    this.descripcion = descripcion;
   }
 }
 
-function addIngredient(nombre, imgURL, containsAlcohol, volumenAlcohol) {
+function addIngredient(
+  nombre,
+  imgURL,
+  containsAlcohol,
+  volumenAlcohol,
+  descripcion
+) {
   let alcohol;
   if (containsAlcohol == null || containsAlcohol != "Yes") {
     alcohol = null;
@@ -125,7 +132,7 @@ function addIngredient(nombre, imgURL, containsAlcohol, volumenAlcohol) {
   } else {
     alcohol = volumenAlcohol;
   }
-  ingredientList.push(new Ingredient(nombre, imgURL, alcohol));
+  ingredientList.push(new Ingredient(nombre, imgURL, alcohol, descripcion));
 }
 
 class Bottle {
@@ -287,22 +294,28 @@ function convertirNombre(nombre) {
   return nombre.replaceAll(" ", "-").toLowerCase();
 }
 function previewSection() {
-  let randomBottle = Math.floor(Math.random() * botellas.length);
-  const { nombre, volumenAlcohol, capacidad, descripcion } =
-    bottleList[randomBottle];
+  let randomBottle;
+  do {
+    randomBottle = Math.floor(Math.random() * ingredientList.length);
+  } while (
+    ingredientList[randomBottle].volumenAlcohol == null ||
+    ingredientList[randomBottle].descripcion == null
+  );
+
+  const { nombre, imgURL, volumenAlcohol, descripcion } =
+    ingredientList[randomBottle];
 
   document.querySelector("#preview").innerHTML = `<div>
-    <img src="./img/botellas/${convertirNombre(
-      nombre
-    )}.png" height="700px" alt="" />
+    <img src="${imgURL.replace("-Medium", "")}" height="700px" alt="" />
     </div>
     <div class="info">
     <ul>
       <li><h2>${nombre}</h2></li>
       <li>
         <ul>
-        <li>${volumenAlcohol}</li>
-        <li>${capacidad} ml</li>
+        <li>${
+          isNaN(volumenAlcohol) ? volumenAlcohol : volumenAlcohol + "%"
+        }</li>
         <li>${descripcion}</li>
         </ul>
       </li>
@@ -330,6 +343,8 @@ const fetchCocktails = async (name) => {
   //? Hasta aca funciona.
   return data;
 };
+
+//setTimeout(previewSection, 3000);
 
 async function fetchDrinks() {
   let promesas = [];
@@ -395,18 +410,17 @@ fetchDrinks().then(async () => {
     (nombre, i, a) => a.indexOf(nombre) === i
   );
 
-  console.log(filteredIngrArr.sort());
-
   let promesas = [];
   for (const ingr of filteredIngrArr) {
     promesas.push(fetchIngr(ingr));
   }
   await Promise.all(promesas);
-  console.log(ingredientList);
+  previewSection();
+  //console.log(cocktailList);
 });
+//.then(previewSection());
 
 async function fetchIngr(name) {
-  console.log("¡¡¡WORKING!!!");
   const ingr = await fetch(
     `https://www.thecocktaildb.com/api/json/v1/1/search.php?i=${name.replace(
       " ",
@@ -414,13 +428,13 @@ async function fetchIngr(name) {
     )}`
   );
   const data = await ingr.json();
-  //console.log(data.ingredients[0].strIngredient);
   let nameIngr = data.ingredients[0].strIngredient;
   addIngredient(
     capitalizeFirstLetter(nameIngr),
     `https://www.thecocktaildb.com/images/ingredients/${nameIngr}-Medium.png`,
     data.ingredients[0].strAlcohol,
-    data.ingredients[0].strABV
+    data.ingredients[0].strABV,
+    data.ingredients[0].strDescription
   );
   return data;
 }
@@ -429,7 +443,7 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-previewSection();
+//previewSection();
 
 let cocktailCard = document.createElement("div");
 
