@@ -446,6 +446,7 @@ function capitalizeFirstLetter(string) {
 //previewSection();
 
 let cocktailCard = document.createElement("div");
+cocktailCard.setAttribute("id", "cards");
 
 let favedCards = JSON.parse(localStorage.getItem("Favoritos")) ?? [];
 
@@ -475,7 +476,7 @@ function cardGenerator(arr) {
       </div>
       
       </button>
-      <div class="pretty p-image p-toggle p-plain p-tada">
+      <div class="pretty p-image p-toggle p-plain p-tada star">
         <input type="checkbox"${isFaved(el)}/>
         <div class="state p-off">
             <img class="image" src="./img/star-no-fill.png">
@@ -493,7 +494,7 @@ function cardGenerator(arr) {
 
   document.querySelector("#DOM").appendChild(cocktailCard);
 
-  let botonFav = document.querySelectorAll("div .pretty");
+  let botonFav = document.querySelectorAll("div .pretty.star");
   let botonCard = document.querySelectorAll("button.card");
   for (let i = 0; i < arr.length; i++) {
     botonFav[i].onclick = () =>
@@ -591,6 +592,8 @@ function calculo(coctel) {
 
 function generateButtons(arr) {
   let orderButtons = document.createElement("div");
+  let favsOnly = document.createElement("div");
+  favsOnly.setAttribute("id", "favSwitch");
   let btnType = [];
   if (arr[0] instanceof Cocktail) {
     btnType = ["Más Ingredientes", "Menos Ingredientes"];
@@ -641,7 +644,16 @@ function generateButtons(arr) {
       </ul>
     </div>
   </div>`;
+
+  favsOnly.innerHTML = `<div class="pretty p-switch p-slim">
+  <input type="checkbox" />
+  <div class="state p-warning">
+      <label>Ver solo Favoritos</label>
+  </div>
+</div>`;
+
   document.querySelector("#DOM").appendChild(orderButtons);
+  orderButtons.appendChild(favsOnly);
 
   document.querySelectorAll(".dropdown-menu button").forEach((btn) => {
     btn.onclick = () => {
@@ -665,10 +677,40 @@ function generateButtons(arr) {
           arr.sort(sortByUsage());
           break;
       }
-      cardGenerator(arr);
+      if (document.querySelector("#favSwitch input").checked) {
+        cardGenerator(arr);
+        document.querySelector("#favSwitch input").checked = true;
+        favSwitch();
+      } else {
+        cardGenerator(arr);
+      }
     };
   });
+
+  document
+    .querySelector(".pretty.p-switch.p-slim")
+    .addEventListener("change", favSwitch);
 }
+
+function favSwitch() {
+  const cardsDivContainers = document.querySelectorAll("#cards > div");
+  let favNames = [];
+  for (const fav of favedCards) {
+    favNames.push(fav.nombre);
+  }
+
+  for (const cardDiv of cardsDivContainers) {
+    if (document.querySelector("#favSwitch input").checked) {
+      cardDiv.setAttribute("class", "d-none");
+      if (favNames.includes(cardDiv.querySelector("h5").textContent)) {
+        cardDiv.removeAttribute("class", "d-none");
+      }
+    } else {
+      cardDiv.removeAttribute("class", "d-none");
+    }
+  }
+}
+
 // Filtros de Ordenamiento
 
 //Por Nombre

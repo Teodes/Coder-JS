@@ -1,5 +1,5 @@
 body {
-  padding: 0;
+  padding: 0 5rem;
   color: white;
   background-color: black;
 }
@@ -56,9 +56,19 @@ header {
     padding-left: 50px;
   }
 }
-
+div button.card {
+  background: rgb(0, 0, 0);
+  background: linear-gradient(
+    0deg,
+    rgb(37, 37, 37) 11%,
+    rgba(255, 255, 255, 1) 100%
+  );
+}
+.card {
+  border: 0;
+}
 .card-title {
-  color: black;
+  color: white;
 }
 #DOM > div {
   display: flex;
@@ -71,12 +81,23 @@ header {
   > div {
     position: relative;
   }
-  .pretty {
+  .pretty.star {
     position: absolute;
     z-index: 4;
     top: 5%;
     right: 5%;
     margin-right: 0;
     transform: scale(2);
+  }
+}
+
+#btn-DOM {
+  display: flex;
+  gap: 3rem;
+  justify-content: space-evenly;
+
+  button {
+    font-size: xx-large;
+    border-radius: 0.8rem;
   }
 }
