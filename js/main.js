@@ -323,6 +323,7 @@ function previewSection() {
     </div>`;
 }
 
+let testGlass = [];
 const fetchCocktails = async (name) => {
   const resp = await fetch(
     `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${name.replace(
@@ -337,9 +338,11 @@ const fetchCocktails = async (name) => {
     for (const drink of data.drinks) {
       if (drink.strDrink.toLowerCase() === name.toLowerCase()) {
         addCocktailFromAPI(drink);
+        testGlass.push(drink.strGlass);
       }
     }
   }
+
   //? Hasta aca funciona.
   return data;
 };
@@ -357,6 +360,7 @@ async function fetchDrinks() {
   }
 
   const finished = Promise.all(promesas);
+  console.log(testGlass.sort());
   return finished;
 }
 
@@ -416,9 +420,8 @@ fetchDrinks().then(async () => {
   }
   await Promise.all(promesas);
   previewSection();
-  //console.log(cocktailList);
+  console.log(cocktailList);
 });
-//.then(previewSection());
 
 async function fetchIngr(name) {
   const ingr = await fetch(
@@ -712,6 +715,16 @@ function generateButtons(arr) {
   document
     .querySelector(".pretty.p-switch.p-slim")
     .addEventListener("change", favSwitch);
+
+  const OptionQty = document.createElement("div");
+  OptionQty.innerHTML = `<select class="form-select" aria-label="Select Quantity of Cards">
+    <option selected>Open this select menu</option>
+    <option value="12">12</option>
+    <option value="24">24</option>
+    <option value="48">48</option>
+  </select>`;
+
+  orderButtons.appendChild(OptionQty);
 }
 
 //Botones creados.
