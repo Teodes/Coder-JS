@@ -74,6 +74,9 @@ div button.card {
     margin-right: 0;
     transform: scale(2); }
 
+#DOM #pagination {
+  justify-content: center; }
+
 #btn-DOM {
   display: flex;
   gap: 3rem;

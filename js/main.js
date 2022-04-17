@@ -450,17 +450,34 @@ cocktailCard.setAttribute("id", "cards");
 
 let favedCards = JSON.parse(localStorage.getItem("Favoritos")) ?? [];
 
-document
-  .querySelector(".btn--ingredientes")
-  .addEventListener("click", () => cardGenerator(ingredientList));
-document
-  .querySelector(".btn--cocteles")
-  .addEventListener("click", () => cardGenerator(cocktailList));
+const btnIngredientes = document.querySelector(".btn--ingredientes");
+const btnCocteles = document.querySelector(".btn--cocteles");
 
-function cardGenerator(arr) {
-  !!document.querySelector("#DOM .sort-container") &&
-    document.querySelector("#DOM").firstChild.remove();
+btnIngredientes.addEventListener("click", () => {
+  cardGenerator(ingredientList);
+  removeActive(btnCocteles);
+  setActive(btnIngredientes);
+});
+btnCocteles.addEventListener("click", () => {
+  cardGenerator(cocktailList);
+  removeActive(btnIngredientes);
+  setActive(btnCocteles);
+});
 
+function setActive(node) {
+  node.setAttribute("class", node.getAttribute("class") + " active");
+}
+function removeActive(node) {
+  node.classList.remove("active");
+}
+
+//! Cambios en progreso (Pagination)
+function cardGenerator(arr, pagination) {
+  !!document.querySelector("#DOM #sort-filter") &&
+    document.querySelector("#DOM #sort-filter").remove();
+
+  !!document.querySelector("#DOM #pagination") &&
+    document.querySelector("#DOM #pagination").remove();
   generateButtons(arr);
 
   cocktailCard.innerHTML = "";
@@ -505,6 +522,7 @@ function cardGenerator(arr) {
       botonCard[i].onclick = () => calculo(arr[i]);
     }
   }
+  generatePagesBtn(arr);
 }
 
 function changeState(btn, arrEl) {
@@ -592,6 +610,8 @@ function calculo(coctel) {
 
 function generateButtons(arr) {
   let orderButtons = document.createElement("div");
+  orderButtons.setAttribute("id", "sort-filter");
+
   let favsOnly = document.createElement("div");
   favsOnly.setAttribute("id", "favSwitch");
   let btnType = [];
@@ -612,7 +632,7 @@ function generateButtons(arr) {
       >
         Seleccionar
       </button>
-      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <ul class="dropdown-menu order-btns" aria-labelledby="dropdownMenuButton">
         <li>
           <button
             type="button"
@@ -655,41 +675,86 @@ function generateButtons(arr) {
   document.querySelector("#DOM").appendChild(orderButtons);
   orderButtons.appendChild(favsOnly);
 
-  document.querySelectorAll(".dropdown-menu button").forEach((btn) => {
-    btn.onclick = () => {
-      switch (btn.textContent) {
-        case "Nombre (A-Z)":
-          arr.sort(sortByName());
-          break;
-        case "Nombre (Z-A)":
-          arr.sort(sortByName()).reverse();
-          break;
-        case "Más Ingredientes":
-          arr.sort(sortByIngrQty()).reverse();
-          break;
-        case "Menos Ingredientes":
-          arr.sort(sortByIngrQty());
-          break;
-        case "Más Usado":
-          arr.sort(sortByUsage()).reverse();
-          break;
-        case "Menos Usado":
-          arr.sort(sortByUsage());
-          break;
-      }
-      if (document.querySelector("#favSwitch input").checked) {
-        cardGenerator(arr);
-        document.querySelector("#favSwitch input").checked = true;
-        favSwitch();
-      } else {
-        cardGenerator(arr);
-      }
-    };
-  });
+  document
+    .querySelectorAll(".dropdown-menu.order-btns button")
+    .forEach((btn) => {
+      btn.onclick = () => {
+        switch (btn.textContent) {
+          case "Nombre (A-Z)":
+            arr.sort(sortByName());
+            break;
+          case "Nombre (Z-A)":
+            arr.sort(sortByName()).reverse();
+            break;
+          case "Más Ingredientes":
+            arr.sort(sortByIngrQty()).reverse();
+            break;
+          case "Menos Ingredientes":
+            arr.sort(sortByIngrQty());
+            break;
+          case "Más Usado":
+            arr.sort(sortByUsage()).reverse();
+            break;
+          case "Menos Usado":
+            arr.sort(sortByUsage());
+            break;
+        }
+        if (document.querySelector("#favSwitch input").checked) {
+          cardGenerator(arr);
+          document.querySelector("#favSwitch input").checked = true;
+          favSwitch();
+        } else {
+          cardGenerator(arr);
+        }
+      };
+    });
 
   document
     .querySelector(".pretty.p-switch.p-slim")
     .addEventListener("change", favSwitch);
+}
+
+//Botones creados.
+//TODO: Añadir la funcionalidad de los mismos.
+function generatePagesBtn(arr) {
+  let pagesBtn = document.createElement("div");
+  pagesBtn.setAttribute("id", "pagination");
+  pagesBtn.innerHTML = "";
+
+  if (arr.length > 24) {
+    pagesBtn.innerHTML = `<nav aria-label="Page navigation">
+    <ul class="pagination pagination-lg">
+    <li class="page-item"><a class="page-link" href="#DOM">Previous</a></li>
+    <li class="page-item"><a class="page-link active" href="#DOM">1</a></li>
+    <li class="page-item"><a class="page-link" href="#DOM">2</a></li>
+    </ul>
+    </nav>`;
+
+    let pagesQty = Math.ceil(arr.length / 24);
+    console.log(pagesQty);
+    for (let i = 3; i <= pagesQty; i++) {
+      let page = document.createElement("li");
+      page.setAttribute("class", "page-item");
+      page.innerHTML = `<a class="page-link" href="#DOM">${i}</a>`;
+      pagesBtn.querySelector("ul").appendChild(page);
+    }
+
+    let next = document.createElement("li");
+    next.setAttribute("class", "page-item");
+    next.innerHTML = `<a class="page-link" href="#DOM">Next</a>`;
+    pagesBtn.querySelector("ul").appendChild(next);
+  }
+  document.querySelector("#DOM").appendChild(pagesBtn);
+
+  return { offset: 0, limit: 24 };
+}
+
+function pagesNumber() {
+  const pagination = document.querySelector("pagination ul");
+  //Crear Dropdown para cantidad de cartas
+  //Hacer uso de la class active
+  //En base al DOM buscar el boton activo y tomar su valor numérico.
+  //Usar el textContent a traves de un parseInt.
 }
 
 function favSwitch() {
