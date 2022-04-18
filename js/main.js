@@ -1,6 +1,7 @@
 /*TODO: En un futuro añadir la posibilidad de elegir entre vasos descartables o cristaleria para cocteleria
 (actualmente solo esta disponible la cristaleria)
-
+//TODO: Crear un JSON para la información estática
+//TODO: Aveces la funcion pagesNumber se ejectuta mas de una vez, posibles llamadas innecesarioas.
 Ademas se deben añadir las instrucciones para la preparacion de cada trago.*/
 
 let cuantosVasos;
@@ -10,7 +11,6 @@ let glassList = [];
 let bottleList = [];
 let ingredientList = [];
 
-//Implementar un filtro de cocteles en base a ingredientes.
 let theUnforgettables = [
   "alexander",
   "americano",
@@ -212,13 +212,13 @@ addBottle(
   "El champán es un vino blanco o rosado espumoso elaborado con una mezcla (coupage o ensamblaje) entre las uvas chardonnay, meunier, pinot noir, pinot gris, pinot blanc, arbanne y petit meslier. Aunque la denominación de champán es exclusiva de la región de Champaña protegida por regímenes de calidad en la Unión Europea, popularmente se utiliza el término champán para denominar a los vinos espumosos elaborados en muchas regiones del mundo."
 );
 class Cocktail {
-  constructor(nombre, ingredientes, proporcion, unidad, imgURL) {
+  constructor(nombre, ingredientes, proporcion, unidad, imgURL, instrucciones) {
     this.nombre = nombre;
     this.ingredientes = ingredientes;
     this.proporcion = proporcion;
     this.unidad = unidad;
-    //this.tamaño = tamaño;
     this.imgURL = imgURL;
+    this.instrucciones = instrucciones;
   }
 }
 
@@ -234,36 +234,36 @@ function addGlass(nombre, capacidad) {
 }
 
 //TODO: Borrar luego, sin uso.
-function addCocktail(nombre, ingredientes, cantidad, vaso) {
-  let propArray = [];
-  let unitArray = [];
-  let prop = "";
-  let unit = "";
-  for (let i = 0; i < cantidad.length; i++) {
-    for (let j = 0; j < cantidad[i].length; j++) {
-      if (!isNaN(parseInt(cantidad[i][j]))) {
-        prop = prop + cantidad[i][j];
-      } else if (
-        !isNaN(parseInt(cantidad[i][j - 1])) &&
-        cantidad[i][j] == " "
-      ) {
-        continue;
-      } else {
-        unit = unit + cantidad[i][j];
-      }
-    }
-    propArray.push(prop);
-    prop = "";
-    unitArray.push(unit);
-    unit = "";
-  }
+// function addCocktail(nombre, ingredientes, cantidad, vaso) {
+//   let propArray = [];
+//   let unitArray = [];
+//   let prop = "";
+//   let unit = "";
+//   for (let i = 0; i < cantidad.length; i++) {
+//     for (let j = 0; j < cantidad[i].length; j++) {
+//       if (!isNaN(parseInt(cantidad[i][j]))) {
+//         prop = prop + cantidad[i][j];
+//       } else if (
+//         !isNaN(parseInt(cantidad[i][j - 1])) &&
+//         cantidad[i][j] == " "
+//       ) {
+//         continue;
+//       } else {
+//         unit = unit + cantidad[i][j];
+//       }
+//     }
+//     propArray.push(prop);
+//     prop = "";
+//     unitArray.push(unit);
+//     unit = "";
+//   }
 
-  const tamaño = glassList.find((el) => el.nombre == vaso);
+//   const tamaño = glassList.find((el) => el.nombre == vaso);
 
-  cocktailList.push(
-    new Cocktail(nombre, ingredientes, propArray, unitArray, tamaño.capacidad)
-  );
-}
+//   cocktailList.push(
+//     new Cocktail(nombre, ingredientes, propArray, unitArray, tamaño.capacidad)
+//   );
+// }
 
 //?El parseInt() funciona correctamente a pesar de darle como parametro un string con palabras.
 //?Ej: parseInt("15ml") da como output 15.
@@ -347,8 +347,6 @@ const fetchCocktails = async (name) => {
   return data;
 };
 
-//setTimeout(previewSection, 3000);
-
 async function fetchDrinks() {
   let promesas = [];
   const arr = theUnforgettables
@@ -360,7 +358,9 @@ async function fetchDrinks() {
   }
 
   const finished = Promise.all(promesas);
-  console.log(testGlass.sort());
+
+  //TODO: Añadir los vasos!!!
+
   return finished;
 }
 
@@ -394,7 +394,8 @@ function addCocktailFromAPI(drink) {
       ingredientes,
       proporcion,
       unidad,
-      drink.strDrinkThumb
+      drink.strDrinkThumb,
+      drink.strInstructions
     )
   );
 }
@@ -420,7 +421,6 @@ fetchDrinks().then(async () => {
   }
   await Promise.all(promesas);
   previewSection();
-  console.log(cocktailList);
 });
 
 async function fetchIngr(name) {
@@ -445,8 +445,6 @@ async function fetchIngr(name) {
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
-
-//previewSection();
 
 let cocktailCard = document.createElement("div");
 cocktailCard.setAttribute("id", "cards");
@@ -475,12 +473,7 @@ function removeActive(node) {
 }
 
 //! Cambios en progreso (Pagination)
-function cardGenerator(arr, pagination) {
-  !!document.querySelector("#DOM #sort-filter") &&
-    document.querySelector("#DOM #sort-filter").remove();
-
-  !!document.querySelector("#DOM #pagination") &&
-    document.querySelector("#DOM #pagination").remove();
+function cardGenerator(arr) {
   generateButtons(arr);
 
   cocktailCard.innerHTML = "";
@@ -522,10 +515,12 @@ function cardGenerator(arr, pagination) {
     if (arr[i] instanceof Ingredient) {
       botonCard[i].onclick = () => filterByIngr(arr[i]);
     } else if (arr[i] instanceof Cocktail) {
-      botonCard[i].onclick = () => calculo(arr[i]);
+      botonCard[i].onclick = () => addToCalculator(arr[i]);
     }
   }
-  generatePagesBtn(arr);
+  generatePagesBtn();
+
+  pagesNumber();
 }
 
 function changeState(btn, arrEl) {
@@ -558,34 +553,18 @@ function filterByIngr(ingr) {
   cardGenerator(resultado);
 }
 
-function calculo(coctel) {
+function addToCalculator(coctel) {
   if (coctel instanceof Cocktail) {
     (async () => {
       const { value: vasos } = await Swal.fire({
-        title: `${coctel.nombre}`,
-        text: "¿Cuántos vasos desea preparar?",
-        showCancelButton: true,
-        cancelButtonText: "Cancelar",
+        title: `<strong>${coctel.nombre}</strong>`,
+        html: `<strong>Instructions:</strong><br> ${coctel.instrucciones}`,
+        showDenyButton: true,
+        denyButtonText: "Cancel",
         backdrop: `rgba(0,0,0,0.6)`,
         imageHeight: 250,
         imageUrl: coctel.imgURL,
-        input: "text",
-        inputPlaceholder: "Ingrese un número",
-        customClass: {
-          validationMessage: "validationMsg",
-        },
-        //Input Validation
-        preConfirm: (num) => {
-          if (!num || isNaN(parseInt(num))) {
-            Swal.showValidationMessage(
-              '<i class="fa fa-info-circle"></i> Ingrese un número.'
-            );
-          } else if (num < 1) {
-            Swal.showValidationMessage(
-              '<i class="fa fa-info-circle"></i> Ingrese un número mayor a 0'
-            );
-          }
-        },
+        confirmButtonText: "Add",
       });
 
       //Mostrar Ingredientes.
@@ -612,6 +591,9 @@ function calculo(coctel) {
 }
 
 function generateButtons(arr) {
+  !!document.querySelector("#DOM #sort-filter") &&
+    document.querySelector("#DOM #sort-filter").remove();
+
   let orderButtons = document.createElement("div");
   orderButtons.setAttribute("id", "sort-filter");
 
@@ -709,45 +691,63 @@ function generateButtons(arr) {
         } else {
           cardGenerator(arr);
         }
+        jumpToPageOne();
       };
     });
 
   document
     .querySelector(".pretty.p-switch.p-slim")
-    .addEventListener("change", favSwitch);
+    .addEventListener("change", () => {
+      favSwitch();
+      jumpToPageOne();
+    });
 
   const OptionQty = document.createElement("div");
-  OptionQty.innerHTML = `<select class="form-select" aria-label="Select Quantity of Cards">
-    <option selected>Open this select menu</option>
+  OptionQty.setAttribute("class", "qty-cards");
+  OptionQty.innerHTML = `<span>Mostrar:</span>
+  <select class="form-select" aria-label="Select Quantity of Cards">
     <option value="12">12</option>
     <option value="24">24</option>
     <option value="48">48</option>
   </select>`;
 
   orderButtons.appendChild(OptionQty);
+
+  document.querySelector(".qty-cards select").addEventListener("change", () => {
+    generatePagesBtn();
+    pagesNumber();
+  });
 }
 
 //Botones creados.
-//TODO: Añadir la funcionalidad de los mismos.
-function generatePagesBtn(arr) {
+function generatePagesBtn() {
+  !!document.querySelector("#DOM #pagination") &&
+    document.querySelector("#DOM #pagination").remove();
+
+  let quantity =
+    document.querySelectorAll("#DOM #cards > div").length -
+    document.querySelectorAll("#DOM #cards .d-none").length;
+
   let pagesBtn = document.createElement("div");
   pagesBtn.setAttribute("id", "pagination");
   pagesBtn.innerHTML = "";
 
-  if (arr.length > 24) {
+  const selectValue = document.querySelector(".qty-cards select").value;
+
+  if (quantity > selectValue) {
     pagesBtn.innerHTML = `<nav aria-label="Page navigation">
     <ul class="pagination pagination-lg">
     <li class="page-item"><a class="page-link" href="#DOM">Previous</a></li>
-    <li class="page-item"><a class="page-link active" href="#DOM">1</a></li>
-    <li class="page-item"><a class="page-link" href="#DOM">2</a></li>
+    <li class="page-item first-page page-num active"><a class="page-link" href="#DOM">1</a></li>
+    <li class="page-item page-num"><a class="page-link" href="#DOM">2</a></li>
     </ul>
     </nav>`;
 
-    let pagesQty = Math.ceil(arr.length / 24);
-    console.log(pagesQty);
+    let pagesQty = Math.ceil(quantity / selectValue);
+
     for (let i = 3; i <= pagesQty; i++) {
       let page = document.createElement("li");
-      page.setAttribute("class", "page-item");
+      page.setAttribute("class", "page-item page-num");
       page.innerHTML = `<a class="page-link" href="#DOM">${i}</a>`;
       pagesBtn.querySelector("ul").appendChild(page);
     }
@@ -759,12 +759,65 @@ function generatePagesBtn(arr) {
   }
   document.querySelector("#DOM").appendChild(pagesBtn);
 
-  return { offset: 0, limit: 24 };
+  //! Puede provocar errores
+  document
+    .querySelectorAll("#pagination nav ul li.page-num a")
+    .forEach((pageBtn) => {
+      pageBtn.addEventListener("click", () => {
+        removeActive(
+          document.querySelector("#pagination nav ul li.page-num.active")
+        );
+        setActive(pageBtn.parentNode);
+        pagesNumber();
+      });
+    });
+  //pagesNumber();
 }
 
+function jumpToPageOne() {
+  const active = document.querySelector("#pagination nav ul li.active");
+  !!active && removeActive(active);
+
+  const firstPage = document.querySelector("#pagination nav ul li.first-page");
+  !!firstPage && setActive(firstPage);
+
+  pagesNumber();
+}
+
+//TODO: Añadir class previous y next a los botones, posteriormente crear la logica para su correcto funcionamiento.
+//!In Progress
 function pagesNumber() {
-  const pagination = document.querySelector("pagination ul");
-  //Crear Dropdown para cantidad de cartas
+  let visibleCards = [];
+  let totalDivs = [];
+
+  for (const card of document.querySelectorAll("#DOM #cards > div")) {
+    totalDivs.push(".");
+    if (card.getAttribute("class") != "d-none") {
+      visibleCards.push(card);
+    }
+  }
+  console.log(`Total divs: ${totalDivs.length}`);
+  console.log(`Visible Cards: ${visibleCards.length}`);
+
+  const activePage = document.querySelector("#pagination nav ul li.active");
+  let currentPage;
+  if (!!activePage) {
+    currentPage = parseInt(activePage.textContent);
+  } else {
+    currentPage = 1;
+  }
+
+  const value = document.querySelector(".qty-cards select").value;
+
+  for (let i = 0; i < visibleCards.length; i++) {
+    if (i >= value * (currentPage - 1) && i <= value * currentPage - 1) {
+      !!visibleCards[i].getAttribute("class") &&
+        visibleCards[i].removeAttribute("class");
+    } else {
+      visibleCards[i].setAttribute("class", "dont-show");
+    }
+  }
+
   //Hacer uso de la class active
   //En base al DOM buscar el boton activo y tomar su valor numérico.
   //Usar el textContent a traves de un parseInt.
@@ -787,6 +840,7 @@ function favSwitch() {
       cardDiv.removeAttribute("class", "d-none");
     }
   }
+  generatePagesBtn();
 }
 
 // Filtros de Ordenamiento

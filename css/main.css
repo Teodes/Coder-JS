@@ -91,3 +91,6 @@ div button.card {
   #btn-DOM button {
     font-size: xx-large;
     border-radius: 0.8rem; }
+
+.dont-show {
+  display: none; }
