@@ -135,82 +135,6 @@ function addIngredient(
   ingredientList.push(new Ingredient(nombre, imgURL, alcohol, descripcion));
 }
 
-class Bottle {
-  constructor(nombre, capacidad, volumenAlcohol, descripcion) {
-    this.nombre = nombre;
-    this.capacidad = capacidad;
-    this.volumenAlcohol = volumenAlcohol;
-    this.descripcion = descripcion;
-  }
-}
-function addBottle(nombre, volumenAlcohol, descripcion) {
-  let alreadyExist = false;
-
-  for (let i = 0; i < bottleList.length; i++) {
-    if (bottleList[i].nombre == nombre) {
-      alreadyExist = true;
-    }
-  }
-
-  if (!alreadyExist) {
-    bottleList.push(new Bottle(nombre, volumenAlcohol, descripcion));
-  }
-}
-let botellas = [
-  ["Jugo de Tomate", 1000],
-  ["Jugo de Arándano", 1500],
-  ["Cola", 2500],
-  ["Soda", 2000],
-  ["Jugo de Naranja", 3000],
-];
-addBottle(
-  "Vodka",
-  750,
-  "40%",
-  "Se trata de una simple mezcla de alcohol y agua. Todas las bebidas alcohólicas —salvo el vodka— se componen de alcohol, agua y algo más. En ocasiones en la botella de vodka se hace constar las materias primas de proveniencia; pero ello es irrelevante desde el punto de vista de la composición del vodka: agua y alcohol. A lo más está levísimamente aromatizado."
-);
-addBottle(
-  "Licor de Café",
-  750,
-  "20%",
-  "Apareció en Jamaica en el siglo XVII. Es muy popular en Galicia, pudiéndose considerar licor tradicional, al que comúnmente se le llama simplemente licor café. Los habitantes de la ciudad de Orense presumen de su autoría, siendo la bebida graduada más popular de la zona. Está amparada por la denominación de origen local protegida Orujo de Galicia."
-);
-addBottle(
-  "Cointreau",
-  700,
-  "40%",
-  "Obtenido a partir de la destilación de cáscaras de naranja de variedades y procedencias diversas, tanto dulces como amargas. Las cáscaras se secan al sol, se maceran y se destilan en alambiques de cobre dando por resultado un aceite esencial que confiere al licor un aroma intenso y muy natural, entre dulce y amargo. Este aceite esencial se mezcla con alcohol, agua y azúcar en forma de almíbar y especias"
-);
-addBottle(
-  "Ron Blanco",
-  750,
-  "38%",
-  "Elaborado a partir de la fermentación y destilación de la melaza o el jugo de la caña de azúcar. La mayoría de su producción se encuentra en las Américas, y concretamente el Caribe, aunque también se da en otros países como las Filipinas o la India."
-);
-addBottle(
-  "Tequila",
-  750,
-  "40%",
-  "Es reconocida como la bebida más representativa de México. Siendo el tequila una bebida distinta al mezcal, se cree que una bebida no tendría ninguna relación en aspectos de elaboración ni destilación con el tequila, pero es de gran importancia mencionar que el tequila es considerado como un tipo específico de mezcal, siendo este obtenido del Agave tequilana de la variedad Weber Azul, siendo que el mezcal en sus distintas variedades puede ser obtenido de catorce distintos tipos de agave. De ahí la frase popular «se llama Tequila, pero se apellida Mezcal»."
-);
-addBottle(
-  "Triple Sec",
-  750,
-  "39%",
-  "El triple seco es el resultado de la triple destilación de una mezcla de cáscaras de naranjas dulces y amargas, maceradas en un alcohol neutro. Las naranjas se recolectan cuando aún están verdes, lo que asegura que la esencia obtenida tenga un aroma más pronunciado. Se añade agua y azúcar así como hierbas y otros ingredientes aromáticos que varían según las marcas."
-);
-addBottle(
-  "Ginebra",
-  700,
-  "40%",
-  "La ginebra es una bebida alcohólica destilada que posee un sabor predominante a nebrinas, los frutos del enebro (Juniperus communis). La ginebra es una de las categorías de destilados más amplia, con diversas regiones de producción, estilos y perfiles de sabor, que tienen en común las gálbulas o nebrinas de enebro."
-);
-addBottle(
-  "Champagne",
-  750,
-  "12%",
-  "El champán es un vino blanco o rosado espumoso elaborado con una mezcla (coupage o ensamblaje) entre las uvas chardonnay, meunier, pinot noir, pinot gris, pinot blanc, arbanne y petit meslier. Aunque la denominación de champán es exclusiva de la región de Champaña protegida por regímenes de calidad en la Unión Europea, popularmente se utiliza el término champán para denominar a los vinos espumosos elaborados en muchas regiones del mundo."
-);
 class Cocktail {
   constructor(nombre, ingredientes, proporcion, unidad, imgURL, instrucciones) {
     this.nombre = nombre;
@@ -233,38 +157,6 @@ function addGlass(nombre, capacidad) {
   glassList.push(new Glass(nombre, capacidad));
 }
 
-//TODO: Borrar luego, sin uso.
-// function addCocktail(nombre, ingredientes, cantidad, vaso) {
-//   let propArray = [];
-//   let unitArray = [];
-//   let prop = "";
-//   let unit = "";
-//   for (let i = 0; i < cantidad.length; i++) {
-//     for (let j = 0; j < cantidad[i].length; j++) {
-//       if (!isNaN(parseInt(cantidad[i][j]))) {
-//         prop = prop + cantidad[i][j];
-//       } else if (
-//         !isNaN(parseInt(cantidad[i][j - 1])) &&
-//         cantidad[i][j] == " "
-//       ) {
-//         continue;
-//       } else {
-//         unit = unit + cantidad[i][j];
-//       }
-//     }
-//     propArray.push(prop);
-//     prop = "";
-//     unitArray.push(unit);
-//     unit = "";
-//   }
-
-//   const tamaño = glassList.find((el) => el.nombre == vaso);
-
-//   cocktailList.push(
-//     new Cocktail(nombre, ingredientes, propArray, unitArray, tamaño.capacidad)
-//   );
-// }
-
 //?El parseInt() funciona correctamente a pesar de darle como parametro un string con palabras.
 //?Ej: parseInt("15ml") da como output 15.
 
@@ -283,12 +175,21 @@ function bottleCapacity(ingr) {
     }
   }
 }
-addGlass("Old Fashion", "250ml");
-addGlass("Highball", "300ml");
-addGlass("Copa Cóctel", "180ml");
-addGlass("Copa Margarita", "250ml");
-addGlass("Copa Flauta", "180ml");
-addGlass("Copa Hurricane", "400ml");
+
+//In progress
+addGlass("champagne flute", "250ml");
+addGlass("cocktail glass", "300ml");
+addGlass("collins glass", "180ml");
+addGlass("copper mug", "250ml");
+addGlass("highball glass", "180ml");
+addGlass("hurricane glass", "400ml");
+addGlass("irish coffee cup", "400ml");
+addGlass("margarita glass", "400ml");
+addGlass("martini glass", "400ml");
+addGlass("nick and nora glass", "400ml");
+addGlass("old-fashioned glass", "400ml");
+addGlass("whiskey sour glass", "400ml");
+addGlass("wine glass", "400ml");
 
 function convertirNombre(nombre) {
   return nombre.replaceAll(" ", "-").toLowerCase();
@@ -342,7 +243,7 @@ const fetchCocktails = async (name) => {
       }
     }
   }
-
+  console.log(testGlass);
   //? Hasta aca funciona.
   return data;
 };
@@ -515,12 +416,22 @@ function cardGenerator(arr) {
     if (arr[i] instanceof Ingredient) {
       botonCard[i].onclick = () => filterByIngr(arr[i]);
     } else if (arr[i] instanceof Cocktail) {
-      botonCard[i].onclick = () => addToCalculator(arr[i]);
+      botonCard[i].onclick = () => showCocktailPopUp(arr[i]);
     }
   }
   generatePagesBtn();
 
   pagesNumber();
+
+  seeUnits();
+}
+
+function seeUnits() {
+  for (const coctail of cocktailList) {
+    for (const unit of coctail.proporcion) {
+      console.log(unit);
+    }
+  }
 }
 
 function changeState(btn, arrEl) {
@@ -553,41 +464,38 @@ function filterByIngr(ingr) {
   cardGenerator(resultado);
 }
 
-function addToCalculator(coctel) {
+function showCocktailPopUp(coctel) {
   if (coctel instanceof Cocktail) {
-    (async () => {
-      const { value: vasos } = await Swal.fire({
-        title: `<strong>${coctel.nombre}</strong>`,
-        html: `<strong>Instructions:</strong><br> ${coctel.instrucciones}`,
-        showDenyButton: true,
-        denyButtonText: "Cancel",
-        backdrop: `rgba(0,0,0,0.6)`,
-        imageHeight: 250,
-        imageUrl: coctel.imgURL,
-        confirmButtonText: "Add",
-      });
-
-      //Mostrar Ingredientes.
-      if (vasos) {
-        let ingrList = `Para preparar ${vasos} vasos de ${coctel.tamaño} de ${coctel.nombre} necesitaras la siguiente cantidad de ingredientes:<br><div>`;
-
-        for (let i = 0; i < coctel.ingredientes.length; i++) {
-          let numBotellas = cantBotellas(coctel, i, vasos);
-          let numGramatical = numBotellas > 1 ? "botellas." : "botella.";
-
-          ingrList += `<br>-${coctel.ingredientes[i]}: ${numBotellas} ${numGramatical}`;
-        }
-
-        Swal.fire({
-          title: `${coctel.nombre}`,
-          html: `${ingrList}</div>`,
-          backdrop: `rgba(0,0,0,0.6)`,
-          imageHeight: 250,
-          imageUrl: coctel.imgURL,
-        });
+    //Mostrar Ingredientes.
+    let ingrList = `<strong>Ingredients:</strong>`;
+    for (const ingrediente of coctel.ingredientes) {
+      if (!!ingrediente) {
+        ingrList += `<br>-${ingrediente}`;
       }
-    })();
+    }
+
+    Swal.fire({
+      title: `<strong>${coctel.nombre}</strong>`,
+      html: `<strong>Instructions:</strong><br> ${coctel.instrucciones}<br><br>${ingrList}`,
+      showDenyButton: true,
+      denyButtonText: "Cancel",
+      backdrop: `rgba(0,0,0,0.6)`,
+      imageHeight: 250,
+      imageUrl: coctel.imgURL,
+      confirmButtonText: "Add",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        addToCalculator(coctel);
+      }
+    });
   }
+}
+
+function addToCalculator(coctel) {
+  //TODO: Crear funcionalidad para ser añadido al DOM de la calculadora con appendChild.
+  console.log(`${coctel.ingredientes}\n${coctel.proporcion}`);
+
+  let calculatorCard = document.createElement("div");
 }
 
 function generateButtons(arr) {
@@ -855,7 +763,26 @@ function sortByName() {
 //Por Cantidad de Ingredientes
 function sortByIngrQty() {
   return function (a, b) {
-    return a.ingredientes.length < b.ingredientes.length ? -1 : 1;
+    let aLength = a.ingredientes.length;
+    let bLength = b.ingredientes.length;
+
+    if (a.ingredientes.includes("")) {
+      aLength = 0;
+      for (const ingr of a.ingredientes) {
+        if (!!ingr && ingr != "") {
+          aLength++;
+        }
+      }
+    }
+    if (b.ingredientes.includes("")) {
+      bLength = 0;
+      for (const ingr of b.ingredientes) {
+        if (!!ingr && ingr != "") {
+          bLength++;
+        }
+      }
+    }
+    return aLength < bLength ? -1 : 1;
   };
 }
 
