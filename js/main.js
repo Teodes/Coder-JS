@@ -136,13 +136,22 @@ function addIngredient(
 }
 
 class Cocktail {
-  constructor(nombre, ingredientes, proporcion, unidad, imgURL, instrucciones) {
+  constructor(
+    nombre,
+    ingredientes,
+    proporcion,
+    unidad,
+    imgURL,
+    instrucciones,
+    vaso
+  ) {
     this.nombre = nombre;
     this.ingredientes = ingredientes;
     this.proporcion = proporcion;
     this.unidad = unidad;
     this.imgURL = imgURL;
     this.instrucciones = instrucciones;
+    this.vaso = vaso;
   }
 }
 
@@ -176,20 +185,19 @@ function bottleCapacity(ingr) {
   }
 }
 
-//In progress
-addGlass("champagne flute", "250ml");
-addGlass("cocktail glass", "300ml");
-addGlass("collins glass", "180ml");
-addGlass("copper mug", "250ml");
-addGlass("highball glass", "180ml");
+addGlass("champagne flute", "180ml");
+addGlass("cocktail glass", "180ml");
+addGlass("collins glass", "300ml");
+addGlass("copper mug", "475ml");
+addGlass("highball glass", "300ml");
 addGlass("hurricane glass", "400ml");
-addGlass("irish coffee cup", "400ml");
-addGlass("margarita glass", "400ml");
-addGlass("martini glass", "400ml");
-addGlass("nick and nora glass", "400ml");
-addGlass("old-fashioned glass", "400ml");
-addGlass("whiskey sour glass", "400ml");
-addGlass("wine glass", "400ml");
+addGlass("irish coffee cup", "290ml");
+addGlass("margarita glass", "250ml");
+addGlass("martini glass", "180ml");
+addGlass("nick and nora glass", "150ml");
+addGlass("old-fashioned glass", "250ml");
+addGlass("whiskey sour glass", "250ml");
+addGlass("wine glass", "150ml");
 
 function convertirNombre(nombre) {
   return nombre.replaceAll(" ", "-").toLowerCase();
@@ -239,11 +247,9 @@ const fetchCocktails = async (name) => {
     for (const drink of data.drinks) {
       if (drink.strDrink.toLowerCase() === name.toLowerCase()) {
         addCocktailFromAPI(drink);
-        testGlass.push(drink.strGlass);
       }
     }
   }
-  console.log(testGlass);
   //? Hasta aca funciona.
   return data;
 };
@@ -260,8 +266,6 @@ async function fetchDrinks() {
 
   const finished = Promise.all(promesas);
 
-  //TODO: Añadir los vasos!!!
-
   return finished;
 }
 
@@ -273,11 +277,6 @@ function addCocktailFromAPI(drink) {
   for (let i = 0; i < Object.entries(drink).length; i++) {
     let propertieName = Object.entries(drink)[i][0];
     let propertieValue = Object.entries(drink)[i][1];
-
-    //continuar creando la logica para añadir los ingredientes
-    //y su proporcion poara ser usados en la funcion
-    //que se encarga de crear los cocteles desde la api.
-    //luego modificar la clase para agregar la foto como propiedad.
 
     if (propertieName.includes("strIngredient") && propertieValue != null) {
       ingredientes.push(propertieValue);
@@ -296,7 +295,8 @@ function addCocktailFromAPI(drink) {
       proporcion,
       unidad,
       drink.strDrinkThumb,
-      drink.strInstructions
+      drink.strInstructions,
+      drink.strGlass
     )
   );
 }
@@ -367,13 +367,14 @@ btnCocteles.addEventListener("click", () => {
 });
 
 function setActive(node) {
+  console.log(node.textContent);
+  //console.log(node.getAttribute("class"));
   node.setAttribute("class", node.getAttribute("class") + " active");
 }
 function removeActive(node) {
   node.classList.remove("active");
 }
 
-//! Cambios en progreso (Pagination)
 function cardGenerator(arr) {
   generateButtons(arr);
 
@@ -423,7 +424,7 @@ function cardGenerator(arr) {
 
   pagesNumber();
 
-  seeUnits();
+  //seeUnits();
 }
 
 function seeUnits() {
@@ -476,7 +477,7 @@ function showCocktailPopUp(coctel) {
 
     Swal.fire({
       title: `<strong>${coctel.nombre}</strong>`,
-      html: `<strong>Instructions:</strong><br> ${coctel.instrucciones}<br><br>${ingrList}`,
+      html: `<strong>Instructions:</strong><br> ${coctel.instrucciones}<br><br>${ingrList}<br><br><strong>Glass</strong><br>${coctel.vaso}`,
       showDenyButton: true,
       denyButtonText: "Cancel",
       backdrop: `rgba(0,0,0,0.6)`,
@@ -493,9 +494,22 @@ function showCocktailPopUp(coctel) {
 
 function addToCalculator(coctel) {
   //TODO: Crear funcionalidad para ser añadido al DOM de la calculadora con appendChild.
+  //TODO: Crear la validacion del inpun (no puede estar vacio, no puede ser superior a "max")
   console.log(`${coctel.ingredientes}\n${coctel.proporcion}`);
-
-  let calculatorCard = document.createElement("div");
+  const divCocktails = document.querySelector("#calculator .calc-cocktails");
+  const divIngredients = document.querySelector(
+    "#calculator .calc-ingredients"
+  );
+  let newCocktail = document.createElement("div");
+  newCocktail.innerHTML = `<img src="${coctel.imgURL}/preview" alt="">
+  <h4>${coctel.nombre}</h4>
+  <div>
+  <label>Quantity:</label>
+  <input type="number" id="quantity" name="quantity" min="1" max="9999" maxlength="4" value="1" required>
+  <button>Delete</button>
+  </div>
+  `;
+  divCocktails.appendChild(newCocktail);
 }
 
 function generateButtons(arr) {
@@ -645,7 +659,7 @@ function generatePagesBtn() {
   if (quantity > selectValue) {
     pagesBtn.innerHTML = `<nav aria-label="Page navigation">
     <ul class="pagination pagination-lg">
-    <li class="page-item"><a class="page-link" href="#DOM">Previous</a></li>
+    <li class="page-item previous"><a class="page-link" href="#DOM">Previous</a></li>
     <li class="page-item first-page page-num active"><a class="page-link" href="#DOM">1</a></li>
     <li class="page-item page-num"><a class="page-link" href="#DOM">2</a></li>
     </ul>
@@ -661,7 +675,7 @@ function generatePagesBtn() {
     }
 
     let next = document.createElement("li");
-    next.setAttribute("class", "page-item");
+    next.setAttribute("class", "page-item next");
     next.innerHTML = `<a class="page-link" href="#DOM">Next</a>`;
     pagesBtn.querySelector("ul").appendChild(next);
   }
@@ -679,7 +693,6 @@ function generatePagesBtn() {
         pagesNumber();
       });
     });
-  //pagesNumber();
 }
 
 function jumpToPageOne() {
@@ -704,8 +717,8 @@ function pagesNumber() {
       visibleCards.push(card);
     }
   }
-  console.log(`Total divs: ${totalDivs.length}`);
-  console.log(`Visible Cards: ${visibleCards.length}`);
+  // console.log(`Total divs: ${totalDivs.length}`);
+  // console.log(`Visible Cards: ${visibleCards.length}`);
 
   const activePage = document.querySelector("#pagination nav ul li.active");
   let currentPage;
@@ -726,9 +739,47 @@ function pagesNumber() {
     }
   }
 
-  //Hacer uso de la class active
-  //En base al DOM buscar el boton activo y tomar su valor numérico.
-  //Usar el textContent a traves de un parseInt.
+  //TODO: Not working yet, needs more work.
+  // let previous = document.querySelector("nav ul li.previous");
+  // console.log(`Previous: ${!!previous}`);
+  // previous.addEventListener("click", () => {
+  //   if (!previous.getAttribute("class").includes("disabled")) {
+  //     let active = document.querySelector(
+  //       "#pagination nav ul li.page-num.active"
+  //     );
+  //     setActive(active.previousElementSibling);
+  //     removeActive(active);
+  //     //pagesNumber();
+  //   }
+  // });
+
+  // let next = document.querySelector("nav ul li.next");
+  // console.log(`Next: ${!!next}`);
+  // next.addEventListener("click", () => {
+  //   if (!next.getAttribute("class").includes("disabled")) {
+  //     let active = document.querySelector(
+  //       "#pagination nav ul li.page-num.active"
+  //     );
+  //     setActive(active.nextElementSibling);
+  //     removeActive(active);
+  //     //pagesNumber();
+  //   }
+  // });
+
+  // if (document.querySelector("nav ul li.active").textContent == "1") {
+  //   previous.setAttribute("class", "page-item previous disabled");
+  // } else {
+  //   previous.classList.remove("disabled");
+  // }
+
+  // if (
+  //   document.querySelector("nav ul li.active").textContent ==
+  //   document.querySelectorAll("nav ul li.page-num").length
+  // ) {
+  //   next.setAttribute("class", "page-item previous disabled");
+  // } else {
+  //   next.classList.remove("disabled");
+  // }
 }
 
 function favSwitch() {

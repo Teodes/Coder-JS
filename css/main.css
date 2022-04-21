@@ -94,3 +94,17 @@ div button.card {
 
 .dont-show {
   display: none; }
+
+.calc-cocktails {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  justify-content: space-evenly;
+  align-items: center; }
+  .calc-cocktails > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 60rem; }
+    .calc-cocktails > div img {
+      border-radius: 10px; }
